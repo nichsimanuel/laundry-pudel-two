@@ -7,6 +7,11 @@
 <title>LAUNDRY PUDEL TWO</title>
 
 <style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
 *{
     box-sizing:border-box;
     margin:0;
@@ -22,9 +27,15 @@ html{
 }
 
 body{
-    background:#f4f7fb;
+    background:
+        linear-gradient(
+            135deg,
+            #eef5ff 0%,
+            #f8fbff 45%,
+            #eef8f5 100%
+        );
     color:#243447;
-    padding:25px;
+    padding:22px;
     min-width:320px;
     overflow-x:hidden;
 }
@@ -34,45 +45,97 @@ body{
     margin:auto;
 }
 
+
+/* =========================================================
+   HEADER
+========================================================= */
+
 .header{
-    background:linear-gradient(135deg,#1976d2,#42a5f5);
+    position:relative;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            135deg,
+            #1565c0 0%,
+            #1976d2 48%,
+            #42a5f5 100%
+        );
     color:white;
-    border-radius:18px;
-    padding:25px;
-    margin-bottom:20px;
-    box-shadow:0 8px 25px rgba(0,0,0,.12);
+    border-radius:20px;
+    padding:28px;
+    margin-bottom:18px;
+    box-shadow:
+        0 10px 30px rgba(25,118,210,.18);
+}
+
+.header::after{
+    content:"";
+    position:absolute;
+    width:180px;
+    height:180px;
+    right:-60px;
+    top:-80px;
+    background:rgba(255,255,255,.08);
+    border-radius:50%;
+    pointer-events:none;
 }
 
 .header h1{
+    position:relative;
+    z-index:1;
     font-size:30px;
+    line-height:1.2;
     margin-bottom:8px;
+    letter-spacing:.2px;
 }
 
 .header p{
-    opacity:.9;
+    position:relative;
+    z-index:1;
+    opacity:.92;
+    font-size:14px;
 }
 
 .realtime{
-    margin-top:15px;
-    background:rgba(255,255,255,.15);
+    position:relative;
+    z-index:1;
+    margin-top:16px;
+    background:rgba(255,255,255,.16);
+    border:1px solid rgba(255,255,255,.18);
     padding:10px 15px;
     border-radius:10px;
     display:inline-block;
-    font-weight:600;
+    font-weight:700;
+    font-size:14px;
+    backdrop-filter:blur(4px);
 }
 
+
+/* =========================================================
+   CARD
+========================================================= */
+
 .card{
-    background:white;
+    background:rgba(255,255,255,.98);
+    border:1px solid rgba(215,224,235,.75);
     border-radius:18px;
     padding:22px;
-    margin-bottom:20px;
-    box-shadow:0 5px 20px rgba(0,0,0,.08);
+    margin-bottom:18px;
+    box-shadow:
+        0 6px 22px rgba(30,55,90,.07);
 }
 
 .card h2{
     margin-bottom:18px;
-    color:#1976d2;
+    color:#1565c0;
+    font-size:21px;
+    line-height:1.25;
 }
+
+
+/* =========================================================
+   FORM
+========================================================= */
 
 .form-grid{
     display:grid;
@@ -83,31 +146,39 @@ body{
 .form-group{
     display:flex;
     flex-direction:column;
+    min-width:0;
 }
 
 .form-group label{
-    font-weight:600;
+    font-weight:700;
     margin-bottom:7px;
-    font-size:14px;
+    font-size:13px;
+    color:#3d4d5f;
 }
 
 .form-group input,
 .form-group select{
-    height:43px;
+    height:44px;
     border:1px solid #d5dce5;
-    border-radius:9px;
+    border-radius:10px;
     padding:0 12px;
     font-size:15px;
     outline:none;
     background:white;
     width:100%;
     max-width:100%;
+    color:#243447;
+    transition:
+        border-color .2s,
+        box-shadow .2s,
+        background .2s;
 }
 
 .form-group input:focus,
 .form-group select:focus{
     border-color:#1976d2;
-    box-shadow:0 0 0 3px rgba(25,118,210,.1);
+    box-shadow:
+        0 0 0 3px rgba(25,118,210,.10);
 }
 
 .form-group input:disabled,
@@ -118,25 +189,37 @@ body{
     opacity:1;
 }
 
+
+/* =========================================================
+   BUTTON AREA
+   LAPTOP: SIMPAN LEBIH BESAR
+   HP: SEMUA FULL WIDTH
+========================================================= */
+
 .button-area{
     display:grid;
-    grid-template-columns:2fr 1fr 1fr;
+    grid-template-columns:minmax(220px,2fr) minmax(150px,1fr) minmax(150px,1fr);
     gap:12px;
     margin-top:20px;
 }
 
 button{
     border:none;
-    border-radius:9px;
+    border-radius:10px;
     height:45px;
     min-width:44px;
     cursor:pointer;
-    font-size:14px;
-    font-weight:700;
-    transition:transform .2s,opacity .2s,box-shadow .2s;
+    font-size:13px;
+    font-weight:800;
+    letter-spacing:.1px;
+    transition:
+        transform .2s,
+        opacity .2s,
+        box-shadow .2s;
     touch-action:manipulation;
     -webkit-user-select:none;
     user-select:none;
+    box-shadow:0 3px 8px rgba(0,0,0,.06);
 }
 
 button:focus-visible{
@@ -145,10 +228,14 @@ button:focus-visible{
 }
 
 @media (hover:hover){
+
     button:hover{
-        transform:translateY(-1px);
-        opacity:.92;
+        transform:translateY(-2px);
+        opacity:.94;
+        box-shadow:
+            0 6px 14px rgba(0,0,0,.12);
     }
+
 }
 
 button:active{
@@ -171,27 +258,40 @@ button:active{
     color:white;
 }
 
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
 .dashboard{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:15px;
+    gap:14px;
 }
 
 .dashboard-card{
-    padding:20px;
+    padding:18px;
     border-radius:15px;
     color:white;
     min-height:105px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    box-shadow:
+        0 5px 13px rgba(0,0,0,.08);
 }
 
 .dashboard-card h3{
-    font-size:13px;
+    font-size:12px;
     opacity:.9;
     margin-bottom:8px;
+    font-weight:600;
 }
 
 .dashboard-card strong{
-    font-size:24px;
+    font-size:23px;
+    line-height:1.25;
+    word-break:break-word;
 }
 
 .blue{background:#1976d2;}
@@ -203,6 +303,11 @@ button:active{
 .dark{background:#37474f;}
 .cyan{background:#00838f;}
 
+
+/* =========================================================
+   HISTORY HEADER
+========================================================= */
+
 .history-header{
     display:flex;
     justify-content:space-between;
@@ -212,15 +317,35 @@ button:active{
     flex-wrap:wrap;
 }
 
+.history-header h2{
+    margin-bottom:0;
+}
+
 .search-box{
-    width:300px;
+    width:320px;
     height:42px;
     border:1px solid #d5dce5;
-    border-radius:9px;
-    padding:0 12px;
+    border-radius:10px;
+    padding:0 13px;
     outline:none;
     max-width:100%;
+    font-size:14px;
+    color:#243447;
+    transition:
+        border-color .2s,
+        box-shadow .2s;
 }
+
+.search-box:focus{
+    border-color:#1976d2;
+    box-shadow:
+        0 0 0 3px rgba(25,118,210,.10);
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
 
 .table-wrapper{
     overflow-x:auto;
@@ -229,6 +354,7 @@ button:active{
     -webkit-overflow-scrolling:touch;
     overscroll-behavior-x:contain;
     scrollbar-width:thin;
+    border-radius:10px;
 }
 
 table{
@@ -241,8 +367,9 @@ th{
     background:#1976d2;
     color:white;
     padding:12px 9px;
-    font-size:13px;
+    font-size:12px;
     white-space:nowrap;
+    font-weight:800;
 }
 
 td{
@@ -250,6 +377,11 @@ td{
     border-bottom:1px solid #e7ebef;
     text-align:center;
     font-size:13px;
+    vertical-align:middle;
+}
+
+tbody tr{
+    transition:background .15s;
 }
 
 tbody tr:hover{
@@ -257,7 +389,7 @@ tbody tr:hover{
 }
 
 .price{
-    font-weight:700;
+    font-weight:800;
     color:#1976d2;
     white-space:nowrap;
 }
@@ -269,20 +401,30 @@ tbody tr:hover{
 
 .status-paid{
     color:#2e7d32;
-    font-weight:700;
+    font-weight:800;
 }
 
 .status-unpaid{
     color:#c62828;
-    font-weight:700;
+    font-weight:800;
+}
+
+
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
+
+.action-column{
+    white-space:nowrap;
 }
 
 .action-btn{
     height:32px;
-    min-width:44px;
-    padding:0 9px;
+    min-width:52px;
+    padding:0 10px;
     font-size:12px;
     margin:2px;
+    box-shadow:none;
 }
 
 .btn-edit{
@@ -295,6 +437,11 @@ tbody tr:hover{
     color:white;
 }
 
+
+/* =========================================================
+   BOTTOM ACTION
+========================================================= */
+
 .bottom-actions{
     display:flex;
     gap:10px;
@@ -304,6 +451,7 @@ tbody tr:hover{
 
 .bottom-actions button{
     padding:0 18px;
+    min-width:180px;
 }
 
 .btn-clear{
@@ -316,20 +464,41 @@ tbody tr:hover{
     color:white;
 }
 
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
 .empty{
     padding:35px;
     text-align:center;
     color:#888;
 }
 
+
+/* =========================================================
+   EDIT INPUT
+========================================================= */
+
 .edit-input,
 .edit-select{
     width:100%;
     min-width:90px;
-    height:32px;
+    height:34px;
     border:1px solid #bbb;
-    border-radius:6px;
-    padding:0 6px;
+    border-radius:7px;
+    padding:0 7px;
+    font-size:13px;
+    text-align:center;
+    outline:none;
+    background:white;
+}
+
+.edit-input:focus,
+.edit-select:focus{
+    border-color:#1976d2;
+    box-shadow:
+        0 0 0 2px rgba(25,118,210,.10);
 }
 
 .edit-input:disabled,
@@ -350,25 +519,14 @@ tbody tr:hover{
     color:white;
 }
 
+
 /* =========================================================
-   RESPONSIVE
+   RESPONSIVE LAPTOP / TABLET
 ========================================================= */
 
-@media(max-width:1000px){
+@media(max-width:1200px){
 
     body{
-        padding:18px;
-    }
-
-    .container{
-        width:100%;
-    }
-
-    .header{
-        padding:22px;
-    }
-
-    .card{
         padding:18px;
     }
 
@@ -380,31 +538,72 @@ tbody tr:hover{
         grid-template-columns:repeat(2,1fr);
     }
 
-    .form-group input,
-    .form-group select,
-    .search-box{
-        min-height:44px;
+    .button-area{
+        grid-template-columns:1.6fr 1fr 1fr;
     }
 
-    .dashboard-card{
-        min-height:100px;
-    }
 }
+
+
+/* =========================================================
+   RESPONSIVE TABLET
+========================================================= */
+
+@media(max-width:800px){
+
+    body{
+        padding:14px;
+    }
+
+    .header{
+        padding:22px;
+    }
+
+    .card{
+        padding:18px;
+    }
+
+    .button-area{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .btn-save{
+        grid-column:1 / -1;
+    }
+
+    .search-box{
+        width:100%;
+    }
+
+    .history-header{
+        align-items:stretch;
+    }
+
+    .history-header h2{
+        width:100%;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE HANDPHONE
+========================================================= */
 
 @media(max-width:650px){
 
     body{
-        padding:10px;
+        padding:9px;
     }
 
     .header{
-        border-radius:14px;
+        border-radius:15px;
         padding:18px 16px;
         margin-bottom:12px;
     }
 
     .header h1{
-        font-size:24px;
+        font-size:23px;
         line-height:1.2;
     }
 
@@ -447,32 +646,50 @@ tbody tr:hover{
         border-radius:9px;
     }
 
+
+    /* BUTTON FORM HP */
+
     .button-area{
         grid-template-columns:1fr;
-        gap:10px;
+        gap:9px;
         margin-top:16px;
     }
 
     .button-area button{
         width:100%;
-        height:46px;
+        height:47px;
+        min-height:47px;
+        font-size:13px;
     }
+
+    .btn-save{
+        grid-column:auto;
+    }
+
+
+    /* DASHBOARD HP */
 
     .dashboard{
         grid-template-columns:1fr;
-        gap:10px;
+        gap:9px;
     }
 
     .dashboard-card{
-        min-height:88px;
-        padding:16px;
+        min-height:82px;
+        padding:15px;
+    }
+
+    .dashboard-card h3{
+        font-size:12px;
     }
 
     .dashboard-card strong{
-        font-size:22px;
+        font-size:21px;
         line-height:1.25;
-        word-break:break-word;
     }
+
+
+    /* HISTORY HP */
 
     .history-header{
         align-items:stretch;
@@ -517,33 +734,52 @@ tbody tr:hover{
         height:38px;
         min-height:38px;
         font-size:14px;
+        text-align:center;
     }
 
     .action-btn{
-        min-width:44px;
+        min-width:48px;
         min-height:38px;
         height:38px;
         padding:0 10px;
+        font-size:12px;
     }
+
+
+    /* BOTTOM BUTTON HP */
 
     .bottom-actions{
         gap:8px;
+        flex-direction:column;
     }
 
     .bottom-actions button{
         width:100%;
-        min-height:44px;
+        min-width:100%;
+        min-height:45px;
+        height:45px;
+        padding:0 12px;
     }
 
     .price{
         font-size:12px;
     }
+
 }
+
+
+/* =========================================================
+   HP KECIL
+========================================================= */
 
 @media(max-width:380px){
 
     body{
         padding:7px;
+    }
+
+    .header{
+        padding:16px 13px;
     }
 
     .header h1{
@@ -557,7 +793,17 @@ tbody tr:hover{
     .dashboard-card strong{
         font-size:20px;
     }
+
+    .button-area button{
+        font-size:12px;
+    }
+
 }
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
 
 @media (prefers-reduced-motion:reduce){
 
@@ -567,7 +813,9 @@ tbody tr:hover{
         scroll-behavior:auto !important;
         transition:none !important;
     }
+
 }
+
 
 /* =========================================================
    SELECT
@@ -575,18 +823,30 @@ tbody tr:hover{
 
 select{
     background-image:
-        linear-gradient(45deg,transparent 50%,#607d8b 50%),
-        linear-gradient(135deg,#607d8b 50%,transparent 50%);
+        linear-gradient(
+            45deg,
+            transparent 50%,
+            #607d8b 50%
+        ),
+        linear-gradient(
+            135deg,
+            #607d8b 50%,
+            transparent 50%
+        );
 
     background-position:
         calc(100% - 17px) 18px,
         calc(100% - 12px) 18px;
 
-    background-size:5px 5px,5px 5px;
+    background-size:
+        5px 5px,
+        5px 5px;
+
     background-repeat:no-repeat;
 
     padding-right:34px !important;
 }
+
 
 /* =========================================================
    PRINT
@@ -745,11 +1005,13 @@ select{
         font-size:14px;
         font-weight:700;
     }
+
 }
 
 .print-total{
     display:none;
 }
+
 </style>
 </head>
 
@@ -757,12 +1019,15 @@ select{
 
 <div class="container">
 
-    <!-- HEADER -->
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
     <div class="header">
 
         <h1>
-            🧺 LAUNDRY PUDEL TWO
+            LAUNDRY PUDEL TWO
         </h1>
 
         <p>
@@ -779,42 +1044,56 @@ select{
     </div>
 
 
-    <!-- FORM PEMBUKUAN -->
+    <!-- =====================================================
+         FORM PEMBUKUAN
+    ====================================================== -->
 
     <div class="card form-card">
 
         <h2>
-            📝 Input Pembukuan
+            Input Pembukuan
         </h2>
 
         <form id="laundryForm">
 
             <div class="form-grid">
 
+
                 <div class="form-group">
-                    <label>Tanggal</label>
+
+                    <label>
+                        Tanggal
+                    </label>
 
                     <input
                         type="text"
                         id="tanggal"
                         readonly
                     >
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Waktu</label>
+
+                    <label>
+                        Waktu
+                    </label>
 
                     <input
                         type="text"
                         id="waktu"
                         readonly
                     >
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Nama Pelanggan</label>
+
+                    <label>
+                        Nama Pelanggan
+                    </label>
 
                     <input
                         type="text"
@@ -825,29 +1104,51 @@ select{
                         placeholder="Masukkan nama pelanggan"
                         required
                     >
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Jenis Laundry</label>
 
-                    <select id="jenis" required>
+                    <label>
+                        Jenis Laundry
+                    </label>
+
+                    <select
+                        id="jenis"
+                        required
+                    >
 
                         <option value="">
                             -- Pilih Laundry --
                         </option>
 
-                        <option value="CB">CB</option>
-                        <option value="CK">CK</option>
-                        <option value="CKG">CKG</option>
-                        <option value="CKL">CKL</option>
+                        <option value="CB">
+                            CB
+                        </option>
+
+                        <option value="CK">
+                            CK
+                        </option>
+
+                        <option value="CKG">
+                            CKG
+                        </option>
+
+                        <option value="CKL">
+                            CKL
+                        </option>
 
                     </select>
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Sabun</label>
+
+                    <label>
+                        Sabun
+                    </label>
 
                     <input
                         type="number"
@@ -857,11 +1158,15 @@ select{
                         inputmode="numeric"
                         placeholder="Contoh: 1"
                     >
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Pewangi</label>
+
+                    <label>
+                        Pewangi
+                    </label>
 
                     <input
                         type="number"
@@ -871,13 +1176,20 @@ select{
                         inputmode="numeric"
                         placeholder="Contoh: 1"
                     >
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Bayar</label>
 
-                    <select id="bayar" required>
+                    <label>
+                        Bayar
+                    </label>
+
+                    <select
+                        id="bayar"
+                        required
+                    >
 
                         <option value="">
                             -- Pilih Status --
@@ -892,11 +1204,15 @@ select{
                         </option>
 
                     </select>
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Cash / QRIS</label>
+
+                    <label>
+                        Cash / QRIS
+                    </label>
 
                     <select
                         id="metode"
@@ -917,11 +1233,15 @@ select{
                         </option>
 
                     </select>
+
                 </div>
 
 
                 <div class="form-group">
-                    <label>Harga</label>
+
+                    <label>
+                        Harga
+                    </label>
 
                     <input
                         type="text"
@@ -931,10 +1251,13 @@ select{
                         autocomplete="off"
                         disabled
                     >
+
                 </div>
 
             </div>
 
+
+            <!-- BUTTON FORM -->
 
             <div class="button-area">
 
@@ -942,7 +1265,7 @@ select{
                     type="submit"
                     class="btn-save"
                 >
-                    💾 SIMPAN PEMBUKUAN
+                    SIMPAN PEMBUKUAN
                 </button>
 
 
@@ -951,7 +1274,7 @@ select{
                     class="btn-reset"
                     id="resetBtn"
                 >
-                    ↻ RESET
+                    RESET DATA
                 </button>
 
 
@@ -960,7 +1283,7 @@ select{
                     class="btn-print"
                     id="printBtn"
                 >
-                    🖨️ CETAK
+                    CETAK DATA
                 </button>
 
             </div>
@@ -970,54 +1293,120 @@ select{
     </div>
 
 
-    <!-- DASHBOARD -->
+    <!-- =====================================================
+         DASHBOARD
+    ====================================================== -->
 
     <div class="card">
 
         <h2>
-            📊 Dashboard Pembukuan
+            Dashboard Pembukuan
         </h2>
 
         <div class="dashboard">
 
+
             <div class="dashboard-card blue">
-                <h3>Total Transaksi</h3>
-                <strong id="totalTransaksi">0</strong>
+
+                <h3>
+                    Total Transaksi
+                </h3>
+
+                <strong id="totalTransaksi">
+                    0
+                </strong>
+
             </div>
+
 
             <div class="dashboard-card green">
-                <h3>Sudah Bayar</h3>
-                <strong id="totalSudah">0</strong>
+
+                <h3>
+                    Sudah Bayar
+                </h3>
+
+                <strong id="totalSudah">
+                    0
+                </strong>
+
             </div>
 
+
             <div class="dashboard-card red">
-                <h3>Belum Bayar</h3>
-                <strong id="totalBelum">0</strong>
+
+                <h3>
+                    Belum Bayar
+                </h3>
+
+                <strong id="totalBelum">
+                    0
+                </strong>
+
             </div>
+
 
             <div class="dashboard-card orange">
-                <h3>Cash / QRIS</h3>
-                <strong id="totalMetode">0 / 0</strong>
+
+                <h3>
+                    Cash / QRIS
+                </h3>
+
+                <strong id="totalMetode">
+                    0 / 0
+                </strong>
+
             </div>
+
 
             <div class="dashboard-card purple">
-                <h3>Total Pendapatan</h3>
-                <strong id="totalPendapatan">Rp 0</strong>
+
+                <h3>
+                    Total Pendapatan
+                </h3>
+
+                <strong id="totalPendapatan">
+                    Rp 0
+                </strong>
+
             </div>
+
 
             <div class="dashboard-card teal">
-                <h3>Uang Sudah Diterima</h3>
-                <strong id="totalUangSudah">Rp 0</strong>
+
+                <h3>
+                    Uang Sudah Diterima
+                </h3>
+
+                <strong id="totalUangSudah">
+                    Rp 0
+                </strong>
+
             </div>
+
 
             <div class="dashboard-card red">
-                <h3>Piutang / Belum Dibayar</h3>
-                <strong id="totalUangBelum">Rp 0</strong>
+
+                <h3>
+                    Piutang / Belum Dibayar
+                </h3>
+
+                <strong id="totalUangBelum">
+                    Rp 0
+                </strong>
+
             </div>
 
+
             <div class="dashboard-card dark">
-                <h3>Cash / QRIS (Rp)</h3>
-                <strong id="totalCashQris">Rp 0 / Rp 0</strong>
+
+                <h3>
+                    Cash / QRIS (Rp)
+                </h3>
+
+                <strong id="totalCashQris">
+                    Rp 0 / Rp 0
+                </strong>
+
             </div>
 
         </div>
@@ -1025,14 +1414,16 @@ select{
     </div>
 
 
-    <!-- HISTORY -->
+    <!-- =====================================================
+         HISTORY
+    ====================================================== -->
 
     <div class="card">
 
         <div class="history-header">
 
             <h2>
-                📚 History Pembukuan
+                History Pembukuan
             </h2>
 
             <input
@@ -1056,16 +1447,45 @@ select{
 
                     <tr>
 
-                        <th>No</th>
-                        <th>Tanggal</th>
-                        <th>Waktu</th>
-                        <th>Nama</th>
-                        <th>Jenis</th>
-                        <th>Sabun</th>
-                        <th>Pewangi</th>
-                        <th>Harga</th>
-                        <th>Bayar</th>
-                        <th>Metode</th>
+                        <th>
+                            No
+                        </th>
+
+                        <th>
+                            Tanggal
+                        </th>
+
+                        <th>
+                            Waktu
+                        </th>
+
+                        <th>
+                            Nama
+                        </th>
+
+                        <th>
+                            Jenis
+                        </th>
+
+                        <th>
+                            Sabun
+                        </th>
+
+                        <th>
+                            Pewangi
+                        </th>
+
+                        <th>
+                            Harga
+                        </th>
+
+                        <th>
+                            Bayar
+                        </th>
+
+                        <th>
+                            Metode
+                        </th>
 
                         <th class="action-column">
                             Aksi
@@ -1083,12 +1503,6 @@ select{
         </div>
 
 
-        <!--
-            Khusus CETAK.
-            Tidak terlihat pada tampilan normal.
-            Pada saat print hanya total pendapatan yang ditampilkan.
-        -->
-
         <div
             class="print-total"
             id="printTotal"
@@ -1097,6 +1511,8 @@ select{
         </div>
 
 
+        <!-- BUTTON HISTORY -->
+
         <div class="bottom-actions">
 
             <button
@@ -1104,7 +1520,7 @@ select{
                 id="clearBtn"
                 type="button"
             >
-                🗑️ HAPUS SEMUA HISTORY
+                HAPUS SEMUA HISTORY
             </button>
 
 
@@ -1113,7 +1529,7 @@ select{
                 id="excelBtn"
                 type="button"
             >
-                📗 EXPORT EXCEL
+                EXPORT EXCEL
             </button>
 
         </div>
@@ -1625,39 +2041,63 @@ form.addEventListener(
 ========================================================= */
 
 function saveLocalData(){
+
     try{
+
         localStorage.setItem(
             STORAGE_KEY,
             JSON.stringify(data)
         );
+
     }catch(error){
+
         console.warn(
             "Local storage tidak dapat disimpan:",
             error
         );
+
     }
+
 }
+
 
 function saveData(){
+
     saveLocalData();
+
 }
 
 
-window.addEventListener("beforeunload", function(){
-    saveLocalData();
-});
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        saveLocalData();
+
+    }
+);
+
 
 function saveItemRealtime(item){
+
     saveLocalData();
+
 }
+
 
 function deleteItemRealtime(id){
+
     saveLocalData();
+
 }
 
+
 function clearAllRealtime(){
+
     saveLocalData();
+
 }
+
 
 /* =========================================================
    DASHBOARD
@@ -1828,9 +2268,6 @@ function updateSummary(){
         formatRupiah(
             totalQris
         );
-
-
-    /* Total khusus untuk cetak */
 
     printTotal.textContent =
         "Total Pendapatan: " +
@@ -2052,7 +2489,7 @@ function renderTable(){
                         class="action-btn btn-edit"
                         onclick="editData(${item.id})"
                     >
-                        ✏️ Edit
+                        Edit
                     </button>
 
                     <button
@@ -2060,7 +2497,7 @@ function renderTable(){
                         class="action-btn btn-delete"
                         onclick="deleteData(${item.id})"
                     >
-                        🗑️ Hapus
+                        Hapus
                     </button>
 
                 </td>
@@ -2786,11 +3223,6 @@ document
 
 /* =========================================================
    EXPORT EXCEL
-   HASIL DIBUAT SAMA DENGAN CETAK:
-   - Hanya History Pembukuan
-   - Total Pendapatan
-   - Tidak ada Dashboard lainnya
-   - Tidak ada kolom Aksi
 ========================================================= */
 
 document
