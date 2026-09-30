@@ -1379,6 +1379,107 @@ select{
     display:none;
 }
 
+
+/* =========================================================
+   WARNA TABEL HISTORY - MENGIKUTI WARNA LOGO PUDEL TWO
+   Hanya tampilan tabel yang diubah. Alur sistem dan tombol
+   tidak diubah.
+========================================================= */
+
+.history-table{
+    border:1px solid #73D5C8;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.history-table th{
+    background:#FE7D46 !important;
+    color:#FFFFFF !important;
+    border:1px solid #D96838 !important;
+}
+
+.history-table td{
+    background:#FFF7C9;
+    color:#075D73;
+    border-bottom:1px solid #73D5C8;
+    border-left:1px solid #B7E7E0;
+    border-right:1px solid #B7E7E0;
+}
+
+.history-table tbody tr:nth-child(even) td{
+    background:#FFE89A;
+}
+
+.history-table tbody tr:hover td{
+    background:#FFE06F !important;
+}
+
+.history-table .edit-input,
+.history-table .edit-select{
+    background:#FFFDF0;
+    border-color:#73D5C8;
+    color:#075D73;
+}
+
+.history-table .price{
+    color:#075D73;
+}
+
+/* =========================================================
+   HASIL CETAK - FULL HITAM / MONOKROM
+   Hanya tampilan cetak yang diubah.
+   Alur sistem, data, layout, dan posisi tombol tetap sama.
+========================================================= */
+
+@media print{
+
+    body,
+    .container,
+    .card,
+    .history-header,
+    .history-header h2,
+    .history-table,
+    .history-table td,
+    .print-total{
+        color:#000 !important;
+    }
+
+    .history-table{
+        border:1px solid #000 !important;
+    }
+
+    .history-table th{
+        background:#000 !important;
+        color:#fff !important;
+        border:1px solid #000 !important;
+    }
+
+    .history-table td{
+        background:#fff !important;
+        color:#000 !important;
+        border:1px solid #000 !important;
+    }
+
+    .history-table tbody tr:nth-child(even) td,
+    .history-table tbody tr:hover td{
+        background:#fff !important;
+        color:#000 !important;
+    }
+
+    .history-table .price,
+    .history-table .status-paid,
+    .history-table .status-unpaid{
+        color:#000 !important;
+    }
+
+    .print-total{
+        border:2px solid #000 !important;
+        color:#000 !important;
+        background:#fff !important;
+    }
+
+}
+
 </style>
 </head>
 
@@ -1649,16 +1750,6 @@ select{
                     SIMPAN PEMBUKUAN
                 </button>
 
-
-                <button
-                    type="button"
-                    class="btn-reset"
-                    id="resetBtn"
-                >
-                    RESET DATA
-                </button>
-
-
                 <button
                     type="button"
                     class="btn-print"
@@ -1779,7 +1870,7 @@ select{
 
         <div class="table-wrapper">
 
-            <table>
+            <table class="history-table">
 
                 <thead>
 
@@ -2222,30 +2313,6 @@ hargaInput.addEventListener(
 
     }
 );
-
-
-/* =========================================================
-   RESET
-========================================================= */
-
-document
-    .getElementById(
-        "resetBtn"
-    )
-    .addEventListener(
-        "click",
-        function(){
-
-            form.reset();
-
-            updateDateTime();
-
-            updateHargaDisplay();
-
-            namaInput.focus();
-
-        }
-    );
 
 
 /* =========================================================
@@ -2772,11 +2839,11 @@ function renderTable(){
                 </td>
 
                 <td>
-                    ${item.sabun}
+                    ${item.sabun} pc
                 </td>
 
                 <td>
-                    ${item.pewangi}
+                    ${item.pewangi} pc
                 </td>
 
                 <td>
@@ -3786,11 +3853,11 @@ td:nth-child(10){
 </td>
 
 <td>
-    ${item.sabun}
+    ${item.sabun} pc
 </td>
 
 <td>
-    ${item.pewangi}
+    ${item.pewangi} pc
 </td>
 
 <td>
