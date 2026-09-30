@@ -344,12 +344,12 @@ button:active{
 }
 
  .filter-area{
-    width:100%;
+    width:auto;
     display:flex;
     align-items:center;
     justify-content:flex-end;
     gap:10px;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
     max-width:100%;
 }
 
@@ -766,20 +766,23 @@ tbody tr:hover{
     .filter-area{
         width:100%;
         display:flex;
-        flex-direction:column;
+        flex-direction:row;
         align-items:stretch;
         gap:8px;
+        flex-wrap:nowrap;
     }
 
     .date-filter{
-        width:100%;
+        width:calc(42% - 5px);
+        flex:0 0 calc(42% - 5px);
         height:46px;
         min-height:46px;
         font-size:16px;
     }
 
     .search-box{
-        width:100%;
+        width:calc(58% - 5px);
+        flex:1 1 calc(58% - 5px);
         height:46px;
         min-height:46px;
         font-size:16px;
@@ -1042,6 +1045,15 @@ tbody tr:hover{
         font-size:19px;
     }
 
+    /* URUTAN DASHBOARD HP: CASH / QRIS (RP) DI ATAS TOTAL PENDAPATAN */
+    .dashboard-card.dark{
+        order:4;
+    }
+
+    .dashboard-card.purple{
+        order:5;
+    }
+
     /* HEADER HISTORY HP */
     .history-header{
         width:100%;
@@ -1057,8 +1069,19 @@ tbody tr:hover{
         margin-bottom:0;
     }
 
+    .date-filter{
+        width:calc(42% - 4px);
+        flex:0 0 calc(42% - 4px);
+        height:46px;
+        min-height:46px;
+        padding:0 8px;
+        font-size:16px;
+        border-radius:9px;
+    }
+
     .search-box{
-        width:100%;
+        width:calc(58% - 4px);
+        flex:1 1 calc(58% - 4px);
         height:46px;
         min-height:46px;
         padding:0 11px;
@@ -1075,8 +1098,30 @@ tbody tr:hover{
         overflow-x:auto;
         overflow-y:hidden;
         -webkit-overflow-scrolling:touch;
+        overscroll-behavior-x:contain;
+        touch-action:pan-x pinch-zoom;
         scrollbar-width:thin;
+        scrollbar-color:#9FB9C6 #EEF4F6;
         border-radius:8px;
+        cursor:grab;
+    }
+
+    .table-wrapper:active{
+        cursor:grabbing;
+    }
+
+    .table-wrapper::-webkit-scrollbar{
+        height:8px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track{
+        background:#EEF4F6;
+        border-radius:10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb{
+        background:#9FB9C6;
+        border-radius:10px;
     }
 
     table{
@@ -1197,6 +1242,7 @@ tbody tr:hover{
     .form-group input,
     .form-group select,
     .button-area button,
+    .date-filter,
     .search-box,
     .bottom-actions button{
         height:44px;
@@ -1873,7 +1919,7 @@ select{
                     class="btn-print"
                     id="printBtn"
                 >
-                    CETAK DATA
+                    CETAK PEMBUKUAN
                 </button>
 
             </div>
@@ -1990,7 +2036,7 @@ select{
                     autocomplete="off"
                     autocapitalize="off"
                     spellcheck="false"
-                    placeholder="🔎 Cari nama...
+                    placeholder="🔎 Cari nama..."
                 >
 
             </div>
