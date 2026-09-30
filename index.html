@@ -1330,21 +1330,6 @@ select{
                 </strong>
 
             </div>
-
-
-            <div class="dashboard-card red">
-
-                <h3>
-                    Belum Bayar
-                </h3>
-
-                <strong id="totalBelum">
-                    0
-                </strong>
-
-            </div>
-
-
             <div class="dashboard-card orange">
 
                 <h3>
@@ -1369,34 +1354,6 @@ select{
                 </strong>
 
             </div>
-
-
-            <div class="dashboard-card teal">
-
-                <h3>
-                    Uang Sudah Diterima
-                </h3>
-
-                <strong id="totalUangSudah">
-                    Rp 0
-                </strong>
-
-            </div>
-
-
-            <div class="dashboard-card red">
-
-                <h3>
-                    Piutang / Belum Dibayar
-                </h3>
-
-                <strong id="totalUangBelum">
-                    Rp 0
-                </strong>
-
-            </div>
-
-
             <div class="dashboard-card dark">
 
                 <h3>
@@ -1667,10 +1624,41 @@ function formatTanggal(date){
 }
 
 
+function formatTanggalAtas(date){
+
+    const namaBulan = [
+        "Januari",
+        "Februari",
+        "Maret",
+        "April",
+        "Mei",
+        "Juni",
+        "Juli",
+        "Agustus",
+        "September",
+        "Oktober",
+        "November",
+        "Desember"
+    ];
+
+    return (
+        date.getDate() +
+        " " +
+        namaBulan[date.getMonth()] +
+        " " +
+        date.getFullYear()
+    );
+
+}
+
+
 function updateDateTime(){
 
     const now =
         new Date();
+
+    const tanggalAtas =
+        formatTanggalAtas(now);
 
     const tanggal =
         formatTanggal(now);
@@ -1685,7 +1673,7 @@ function updateDateTime(){
     document.getElementById(
         "realtime"
     ).textContent =
-        tanggal +
+        tanggalAtas +
         " • " +
         waktu;
 
@@ -2114,15 +2102,7 @@ function updateSummary(){
                 item.bayar ===
                 "SUDAH"
         ).length;
-
-    const totalBelum =
-        data.filter(
-            item =>
-                item.bayar ===
-                "BELUM"
-        ).length;
-
-    const totalPendapatan =
+const totalPendapatan =
         data.reduce(
             (sum,item) =>
                 sum +
@@ -2136,38 +2116,7 @@ function updateSummary(){
                 ),
             0
         );
-
-    const totalUangSudah =
-        data.reduce(
-            (sum,item) =>
-                sum +
-                (
-                    item.bayar ===
-                    "SUDAH"
-                        ? Number(
-                            item.harga
-                          ) || 0
-                        : 0
-                ),
-            0
-        );
-
-    const totalUangBelum =
-        data.reduce(
-            (sum,item) =>
-                sum +
-                (
-                    item.bayar ===
-                    "BELUM"
-                        ? Number(
-                            item.harga
-                          ) || 0
-                        : 0
-                ),
-            0
-        );
-
-    const totalCash =
+const totalCash =
         data.reduce(
             (sum,item) =>
                 sum +
@@ -2224,13 +2173,7 @@ function updateSummary(){
         "totalSudah"
     ).textContent =
         totalSudah;
-
-    document.getElementById(
-        "totalBelum"
-    ).textContent =
-        totalBelum;
-
-    document.getElementById(
+document.getElementById(
         "totalMetode"
     ).textContent =
         jumlahCash +
@@ -2243,22 +2186,7 @@ function updateSummary(){
         formatRupiah(
             totalPendapatan
         );
-
-    document.getElementById(
-        "totalUangSudah"
-    ).textContent =
-        formatRupiah(
-            totalUangSudah
-        );
-
-    document.getElementById(
-        "totalUangBelum"
-    ).textContent =
-        formatRupiah(
-            totalUangBelum
-        );
-
-    document.getElementById(
+document.getElementById(
         "totalCashQris"
     ).textContent =
         formatRupiah(
