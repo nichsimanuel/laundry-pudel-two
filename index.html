@@ -1016,16 +1016,6 @@ tbody tr:hover{
 
 
 
-.btn-clear{
-
-    background:#D84335;
-
-    color:white;
-
-}
-
-
-
 .btn-excel{
 
     background:#237A4B;
@@ -4666,28 +4656,7 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
 
 
         <div class="bottom-actions">
-
-
-
-            <button
-
-                class="btn-clear"
-
-                id="clearBtn"
-
-                type="button"
-
-            >
-
-                HAPUS SEMUA HISTORY
-
-            </button>
-
-
-
-
-
-            <button
+<button
 
                 class="btn-excel"
 
@@ -5860,20 +5829,6 @@ function saveItemRealtime(item){
 
 
 function deleteItemRealtime(id){
-
-
-
-    saveLocalData();
-
-
-
-}
-
-
-
-
-
-function clearAllRealtime(){
 
 
 
@@ -7964,92 +7919,6 @@ dateFilter.addEventListener(
     renderTable
 
 );
-
-
-
-
-
-/* =========================================================
-
-   CLEAR ALL
-
-========================================================= */
-
-
-
-document
-
-    .getElementById(
-
-        "clearBtn"
-
-    )
-
-    .addEventListener(
-
-        "click",
-
-        function(){
-
-
-
-            if(
-
-                data.length === 0
-
-            ){
-
-
-
-                alert(
-
-                    "History masih kosong."
-
-                );
-
-
-
-                return;
-
-
-
-            }
-
-
-
-            const yakin =
-
-                confirm(
-
-                    "Apakah Anda yakin ingin menghapus SEMUA history?"
-
-                );
-
-
-
-            if(!yakin){
-
-                return;
-
-            }
-
-
-
-            data = [];
-
-
-
-            clearAllRealtime();
-
-
-
-            renderTable();
-
-
-
-        }
-
-    );
 
 
 
