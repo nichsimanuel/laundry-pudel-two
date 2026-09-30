@@ -3549,6 +3549,95 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
     }
 }
 
+
+/* =========================================================
+   FINAL UI POLISH
+   Hanya tampilan: warna dashboard + scrolling HP.
+   Workflow, fungsi, dan tata letak tombol tidak diubah.
+========================================================= */
+
+/* DASHBOARD - warna lebih modern dan lembut */
+.dashboard-card.blue{
+    background:linear-gradient(135deg,#3B82F6 0%,#2563EB 100%);
+}
+.dashboard-card.green{
+    background:linear-gradient(135deg,#34D399 0%,#059669 100%);
+}
+.dashboard-card.orange{
+    background:linear-gradient(135deg,#FDBA74 0%,#F97316 100%);
+}
+.dashboard-card.red{
+    background:linear-gradient(135deg,#FB7185 0%,#E11D48 100%);
+}
+.dashboard-card.purple{
+    background:linear-gradient(135deg,#A78BFA 0%,#7C3AED 100%);
+}
+.dashboard-card.teal{
+    background:linear-gradient(135deg,#2DD4BF 0%,#0F766E 100%);
+}
+.dashboard-card.dark{
+    background:linear-gradient(135deg,#64748B 0%,#334155 100%);
+}
+.dashboard-card.cyan{
+    background:linear-gradient(135deg,#22D3EE 0%,#0891B2 100%);
+}
+
+.dashboard-card{
+    border:1px solid rgba(255,255,255,.16);
+    box-shadow:
+        0 8px 20px rgba(30,55,90,.12),
+        inset 0 1px 0 rgba(255,255,255,.14);
+}
+
+.dashboard-card h3{
+    color:rgba(255,255,255,.92);
+}
+
+.dashboard-card strong{
+    color:#fff;
+}
+
+/* HP: halaman tetap bisa digulir atas-bawah.
+   Area tabel tetap bisa digeser kiri-kanan, tanpa mematikan
+   gesture vertikal halaman. */
+@media(max-width:650px){
+    html{
+        height:auto;
+        min-height:100%;
+        overflow-x:hidden;
+        overflow-y:auto;
+        touch-action:pan-y;
+    }
+
+    body{
+        height:auto;
+        min-height:100vh;
+        overflow-x:hidden;
+        overflow-y:auto;
+        touch-action:pan-y;
+        -webkit-overflow-scrolling:touch;
+    }
+
+    .container{
+        height:auto;
+        min-height:100%;
+    }
+
+    .table-wrapper{
+        overflow-x:auto;
+        overflow-y:visible;
+        touch-action:pan-x pan-y pinch-zoom;
+        -webkit-overflow-scrolling:touch;
+    }
+
+    /* Dashboard HP tetap ringkas, tetapi lebih menarik */
+    .dashboard-card{
+        box-shadow:
+            0 7px 16px rgba(30,55,90,.12),
+            inset 0 1px 0 rgba(255,255,255,.14);
+    }
+}
+
 </style>
 
 </head>
