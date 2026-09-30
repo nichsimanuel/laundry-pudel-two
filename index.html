@@ -1990,7 +1990,7 @@ select{
                     autocomplete="off"
                     autocapitalize="off"
                     spellcheck="false"
-                    placeholder="🔎 Cari nama, jenis, tanggal..."
+                    placeholder="🔎 Cari nama...
                 >
 
             </div>
@@ -2023,7 +2023,7 @@ select{
                         </th>
 
                         <th>
-                            Jenis
+                            Jenis Laundry
                         </th>
 
                         <th>
@@ -2149,28 +2149,6 @@ try{
 /* =========================================================
    ELEMENT
 ========================================================= */
-
-/* =========================================================
-   BUTTON HISTORY
-   Kedua tombol selalu dapat digunakan langsung.
-   Tidak membutuhkan checkbox, pilihan baris, atau seleksi data.
-   Tata letak dan fungsi utama sistem tetap dipertahankan.
-========================================================= */
-
-const clearHistoryButton =
-    document.getElementById("clearBtn");
-
-const exportExcelButton =
-    document.getElementById("excelBtn");
-
-if(clearHistoryButton){
-    clearHistoryButton.disabled = false;
-}
-
-if(exportExcelButton){
-    exportExcelButton.disabled = false;
-}
-
 
 const form =
     document.getElementById(
@@ -3760,7 +3738,7 @@ dateFilter.addEventListener(
 
 
 /* =========================================================
-   CLEAR ALL - LANGSUNG DAPAT DIGUNAKAN TANPA CHECKBOX
+   CLEAR ALL
 ========================================================= */
 
 document
@@ -3825,7 +3803,7 @@ document
 
 
 /* =========================================================
-   EXPORT EXCEL - LANGSUNG DAPAT DIGUNAKAN TANPA CHECKBOX
+   EXPORT EXCEL
 ========================================================= */
 
 document
