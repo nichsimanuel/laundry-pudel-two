@@ -833,6 +833,341 @@ tbody tr:hover{
 }
 
 
+
+/* =========================================================
+   OPTIMASI KHUSUS HANDPHONE
+   Hanya mengatur tampilan responsif - alur kerja tidak diubah
+========================================================= */
+
+@media (max-width:650px){
+
+    html{
+        width:100%;
+        overflow-x:hidden;
+    }
+
+    body{
+        width:100%;
+        min-width:0;
+        padding:
+            max(6px, env(safe-area-inset-top))
+            max(6px, env(safe-area-inset-right))
+            max(6px, env(safe-area-inset-bottom))
+            max(6px, env(safe-area-inset-left));
+        overflow-x:hidden;
+    }
+
+    .container{
+        width:100%;
+        max-width:100%;
+        margin:0;
+    }
+
+    /* HEADER HP */
+    .header{
+        width:100%;
+        padding:14px 12px;
+        margin-bottom:10px;
+        border-radius:14px;
+    }
+
+    .header-brand{
+        width:100%;
+        display:flex;
+        align-items:center;
+        gap:9px;
+    }
+
+    .header-logo{
+        width:68px;
+        height:68px;
+        flex:0 0 68px;
+        object-fit:contain;
+    }
+
+    .header-title{
+        flex:1;
+        min-width:0;
+    }
+
+    .header h1{
+        font-size:20px;
+        line-height:1.15;
+        margin-bottom:4px;
+        letter-spacing:0;
+        word-break:normal;
+    }
+
+    .header p{
+        font-size:12px;
+        line-height:1.3;
+    }
+
+    .realtime{
+        width:100%;
+        margin-top:11px;
+        padding:9px 8px;
+        border-radius:9px;
+        font-size:12px;
+        line-height:1.35;
+        text-align:center;
+        white-space:normal;
+    }
+
+    /* CARD HP */
+    .card{
+        width:100%;
+        padding:12px;
+        margin-bottom:10px;
+        border-radius:13px;
+    }
+
+    .card h2{
+        font-size:18px;
+        margin-bottom:12px;
+    }
+
+    /* FORM HP */
+    .form-grid{
+        width:100%;
+        grid-template-columns:1fr;
+        gap:10px;
+    }
+
+    .form-group{
+        width:100%;
+    }
+
+    .form-group label{
+        margin-bottom:5px;
+        font-size:12px;
+    }
+
+    .form-group input,
+    .form-group select{
+        width:100%;
+        height:46px;
+        min-height:46px;
+        padding:0 11px;
+        font-size:16px;
+        border-radius:9px;
+    }
+
+    /* TOMBOL HP - area sentuh nyaman */
+    .button-area{
+        width:100%;
+        grid-template-columns:1fr;
+        gap:8px;
+        margin-top:14px;
+    }
+
+    .button-area button{
+        width:100%;
+        min-width:0;
+        height:46px;
+        min-height:46px;
+        font-size:13px;
+        border-radius:9px;
+    }
+
+    .btn-save{
+        grid-column:auto;
+    }
+
+    /* DASHBOARD HP */
+    .dashboard{
+        width:100%;
+        grid-template-columns:1fr;
+        gap:8px;
+    }
+
+    .dashboard-card{
+        min-height:76px;
+        padding:13px;
+        border-radius:11px;
+    }
+
+    .dashboard-card h3{
+        font-size:11px;
+        margin-bottom:5px;
+    }
+
+    .dashboard-card strong{
+        font-size:19px;
+    }
+
+    /* HEADER HISTORY HP */
+    .history-header{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+        gap:9px;
+        margin-bottom:11px;
+    }
+
+    .history-header h2{
+        width:100%;
+        margin-bottom:0;
+    }
+
+    .search-box{
+        width:100%;
+        height:46px;
+        min-height:46px;
+        padding:0 11px;
+        font-size:16px;
+        border-radius:9px;
+    }
+
+    /* TABEL HISTORY
+       Tetap tabel asli; hanya dibuat nyaman digeser horizontal di HP. */
+    .table-wrapper{
+        width:100%;
+        max-width:100%;
+        margin:0;
+        overflow-x:auto;
+        overflow-y:hidden;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:thin;
+        border-radius:8px;
+    }
+
+    table{
+        min-width:1050px;
+    }
+
+    th{
+        padding:10px 7px;
+        font-size:11px;
+    }
+
+    td{
+        padding:8px 7px;
+        font-size:11px;
+    }
+
+    .edit-input,
+    .edit-select{
+        min-width:95px;
+        width:100%;
+        height:38px;
+        min-height:38px;
+        padding:0 6px;
+        font-size:14px;
+        text-align:center;
+    }
+
+    .action-btn{
+        min-width:48px;
+        width:auto;
+        min-height:38px;
+        height:38px;
+        padding:0 9px;
+        margin:2px 1px;
+        font-size:12px;
+    }
+
+    /* TOMBOL BAWAH HP */
+    .bottom-actions{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        margin-top:12px;
+    }
+
+    .bottom-actions button{
+        width:100%;
+        min-width:100%;
+        min-height:46px;
+        height:46px;
+        padding:0 12px;
+        font-size:13px;
+    }
+
+    .empty{
+        padding:25px 10px;
+        font-size:13px;
+    }
+
+    /* Hindari elemen melebar karena teks panjang */
+    .price,
+    .status-paid,
+    .status-unpaid{
+        white-space:nowrap;
+    }
+}
+
+
+/* HP SANGAT KECIL */
+@media (max-width:380px){
+
+    body{
+        padding:
+            max(5px, env(safe-area-inset-top))
+            max(5px, env(safe-area-inset-right))
+            max(5px, env(safe-area-inset-bottom))
+            max(5px, env(safe-area-inset-left));
+    }
+
+    .header{
+        padding:12px 10px;
+        border-radius:12px;
+    }
+
+    .header-brand{
+        gap:7px;
+    }
+
+    .header-logo{
+        width:58px;
+        height:58px;
+        flex-basis:58px;
+    }
+
+    .header h1{
+        font-size:18px;
+    }
+
+    .header p{
+        font-size:11px;
+    }
+
+    .realtime{
+        font-size:11px;
+        padding:8px 6px;
+    }
+
+    .card{
+        padding:10px;
+        border-radius:11px;
+    }
+
+    .card h2{
+        font-size:17px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .button-area button,
+    .search-box,
+    .bottom-actions button{
+        height:44px;
+        min-height:44px;
+    }
+
+    .button-area button,
+    .bottom-actions button{
+        font-size:12px;
+    }
+
+    table{
+        min-width:1020px;
+    }
+}
+
+
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
