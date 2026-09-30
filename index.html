@@ -4178,28 +4178,6 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
 
 
 
-            <div class="dashboard-card green">
-
-
-
-                <h3>
-
-                    Sudah Bayar
-
-                </h3>
-
-
-
-                <strong id="totalSudah">
-
-                    0
-
-                </strong>
-
-
-
-            </div>
-
             <div class="dashboard-card orange">
 
 
@@ -5952,19 +5930,6 @@ function updateSummary(filteredData = getFilteredData()){
 
 
 
-    const totalSudah =
-
-        filteredData.filter(
-
-            item =>
-
-                item.bayar ===
-
-                "SUDAH"
-
-        ).length;
-
-
 
     const totalPendapatan =
 
@@ -6100,15 +6065,6 @@ function updateSummary(filteredData = getFilteredData()){
 
         totalTransaksi;
 
-
-
-    document.getElementById(
-
-        "totalSudah"
-
-    ).textContent =
-
-        totalSudah;
 
 
 
