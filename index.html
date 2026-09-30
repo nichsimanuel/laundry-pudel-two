@@ -1214,6 +1214,70 @@ tbody tr:hover{
 }
 
 
+.upload-excel-floating{
+    position:fixed;
+    right:22px;
+    bottom:22px;
+    z-index:50;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:42px;
+    padding:0 15px;
+    border-radius:10px;
+    background:
+        linear-gradient(
+            135deg,
+            #FEDA5C 0%,
+            #FE9A4A 45%,
+            #29B6D1 100%
+        );
+    color:#28465A;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.1px;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(30,55,90,.16);
+    border:1px solid rgba(254,125,70,.28);
+    user-select:none;
+    -webkit-user-select:none;
+    transition:
+        transform .2s,
+        opacity .2s,
+        box-shadow .2s;
+}
+
+@media (hover:hover){
+    .upload-excel-floating:hover{
+        transform:translateY(-2px);
+        opacity:.94;
+        box-shadow:0 7px 16px rgba(30,55,90,.20);
+    }
+}
+
+.upload-excel-floating:active{
+    transform:translateY(0);
+    opacity:.88;
+}
+
+@media(max-width:650px){
+    .upload-excel-floating{
+        right:10px;
+        bottom:10px;
+        min-height:40px;
+        padding:0 12px;
+        font-size:11px;
+        border-radius:9px;
+    }
+}
+
+@media print{
+    .upload-excel-floating{
+        display:none !important;
+    }
+}
+
+
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
@@ -1429,48 +1493,54 @@ select{
 
 
 /* =========================================================
-   WARNA TABEL HISTORY - MENGIKUTI WARNA LOGO PUDEL TWO
+   WARNA TABEL HISTORY - SOFT & NYAMAN DILIHAT
    Hanya tampilan tabel yang diubah. Alur sistem dan tombol
    tidak diubah.
 ========================================================= */
 
 .history-table{
-    border:1px solid #73D5C8;
+    border:1px solid #D6E4EA;
     border-radius:10px;
     overflow:hidden;
 }
 
 .history-table th{
-    background:#000000 !important;
-    color:#FFFFFF !important;
-    border:1px solid #000000 !important;
+    background:
+        linear-gradient(
+            135deg,
+            #DFF4F2 0%,
+            #DCEEF7 50%,
+            #E9EAF8 100%
+        ) !important;
+    color:#35566A !important;
+    border:1px solid #C9DDE6 !important;
 }
 
 .history-table td{
-    background:#FFF7C9;
-    color:#075D73;
-    border-bottom:1px solid #73D5C8;
-    border-left:1px solid #B7E7E0;
-    border-right:1px solid #B7E7E0;
+    background:#FFFFFF;
+    color:#405766;
+    border-bottom:1px solid #E2EBEF;
+    border-left:1px solid #EDF2F4;
+    border-right:1px solid #EDF2F4;
 }
 
 .history-table tbody tr:nth-child(even) td{
-    background:#FFE89A;
+    background:#F6FAFC;
 }
 
 .history-table tbody tr:hover td{
-    background:#FFE06F !important;
+    background:#EEF7F8 !important;
 }
 
 .history-table .edit-input,
 .history-table .edit-select{
-    background:#FFFDF0;
-    border-color:#73D5C8;
-    color:#075D73;
+    background:#FFFFFF;
+    border-color:#C9DDE6;
+    color:#405766;
 }
 
 .history-table .price{
-    color:#075D73;
+    color:#35566A;
 }
 
 /* =========================================================
@@ -2023,6 +2093,21 @@ select{
 
         </div>
 
+        <input
+            type="file"
+            id="excelUpload"
+            accept=".xls"
+            style="display:none;"
+        >
+
+        <label
+            for="excelUpload"
+            class="upload-excel-floating"
+            title="Upload Excel ke History"
+        >
+            ⬆ UPLOAD EXCEL
+        </label>
+
     </div>
 
 </div>
@@ -2064,6 +2149,28 @@ try{
 /* =========================================================
    ELEMENT
 ========================================================= */
+
+/* =========================================================
+   BUTTON HISTORY
+   Kedua tombol selalu dapat digunakan langsung.
+   Tidak membutuhkan checkbox, pilihan baris, atau seleksi data.
+   Tata letak dan fungsi utama sistem tetap dipertahankan.
+========================================================= */
+
+const clearHistoryButton =
+    document.getElementById("clearBtn");
+
+const exportExcelButton =
+    document.getElementById("excelBtn");
+
+if(clearHistoryButton){
+    clearHistoryButton.disabled = false;
+}
+
+if(exportExcelButton){
+    exportExcelButton.disabled = false;
+}
+
 
 const form =
     document.getElementById(
@@ -3653,7 +3760,7 @@ dateFilter.addEventListener(
 
 
 /* =========================================================
-   CLEAR ALL
+   CLEAR ALL - LANGSUNG DAPAT DIGUNAKAN TANPA CHECKBOX
 ========================================================= */
 
 document
@@ -3718,7 +3825,7 @@ document
 
 
 /* =========================================================
-   EXPORT EXCEL
+   EXPORT EXCEL - LANGSUNG DAPAT DIGUNAKAN TANPA CHECKBOX
 ========================================================= */
 
 document
@@ -4080,6 +4187,546 @@ td:nth-child(10){
 
         }
     );
+
+
+/* =========================================================
+   UPLOAD / IMPORT EXCEL
+   Membaca file .xls hasil EXPORT EXCEL program ini
+   dan menambahkannya ke History tanpa menghapus data lama.
+========================================================= */
+
+const excelUpload =
+    document.getElementById(
+        "excelUpload"
+    );
+
+
+function normalizeImportedDate(value){
+
+    const text =
+        String(
+            value ?? ""
+        ).trim();
+
+    if(!text){
+        return "";
+    }
+
+    if(
+        /^\d{2}\/\d{2}\/\d{4}$/.test(
+            text
+        )
+    ){
+        return text;
+    }
+
+    if(
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            text
+        )
+    ){
+        const parts =
+            text.split("-");
+
+        return (
+            parts[2] +
+            "/" +
+            parts[1] +
+            "/" +
+            parts[0]
+        );
+    }
+
+    const parsed =
+        new Date(text);
+
+    if(
+        !Number.isNaN(
+            parsed.getTime()
+        )
+    ){
+        return formatTanggal(
+            parsed
+        );
+    }
+
+    return text;
+
+}
+
+
+function normalizeImportedPayment(value){
+
+    const text =
+        String(
+            value ?? ""
+        )
+        .trim()
+        .toUpperCase();
+
+    if(
+        text.includes("BELUM")
+    ){
+        return "BELUM";
+    }
+
+    if(
+        text.includes("SUDAH") ||
+        text.includes("✓")
+    ){
+        return "SUDAH";
+    }
+
+    return "";
+
+}
+
+
+function normalizeImportedMethod(value){
+
+    const text =
+        String(
+            value ?? ""
+        )
+        .trim()
+        .toUpperCase();
+
+    if(
+        text.includes("CASH")
+    ){
+        return "CASH";
+    }
+
+    if(
+        text.includes("QRIS")
+    ){
+        return "QRIS";
+    }
+
+    return "";
+
+}
+
+
+function parseImportedNumber(value){
+
+    if(
+        typeof value ===
+        "number"
+    ){
+        return value;
+    }
+
+    const text =
+        String(
+            value ?? ""
+        )
+        .trim();
+
+    if(!text){
+        return 0;
+    }
+
+    const cleaned =
+        text
+            .replace(
+                /[^\d,-]/g,
+                ""
+            );
+
+    if(
+        cleaned.includes(",") &&
+        cleaned.includes(".")
+    ){
+        return Number(
+            cleaned.replace(
+                /\./g,
+                ""
+            ).replace(
+                ",",
+                "."
+            )
+        ) || 0;
+    }
+
+    return Number(
+        cleaned.replace(
+            ",",
+            "."
+        )
+    ) || 0;
+
+}
+
+
+function getImportedCell(
+    row,
+    index
+){
+
+    const cell =
+        row.children[index];
+
+    return cell
+        ? cell.textContent.trim()
+        : "";
+
+}
+
+
+function convertImportedRowsToData(
+    rows
+){
+
+    const imported = [];
+
+    rows.forEach(
+        function(row,index){
+
+            const cells =
+                row.children;
+
+            if(
+                !cells ||
+                cells.length < 10
+            ){
+                return;
+            }
+
+            const tanggal =
+                getImportedCell(
+                    row,
+                    1
+                );
+
+            const waktu =
+                getImportedCell(
+                    row,
+                    2
+                );
+
+            const nama =
+                getImportedCell(
+                    row,
+                    3
+                );
+
+            const jenis =
+                getImportedCell(
+                    row,
+                    4
+                );
+
+            const sabunText =
+                getImportedCell(
+                    row,
+                    5
+                );
+
+            const pewangiText =
+                getImportedCell(
+                    row,
+                    6
+                );
+
+            const hargaText =
+                getImportedCell(
+                    row,
+                    7
+                );
+
+            const bayarText =
+                getImportedCell(
+                    row,
+                    8
+                );
+
+            const metodeText =
+                getImportedCell(
+                    row,
+                    9
+                );
+
+            if(
+                !tanggal &&
+                !nama &&
+                !jenis
+            ){
+                return;
+            }
+
+            const bayar =
+                normalizeImportedPayment(
+                    bayarText
+                );
+
+            const harga =
+                bayar === "SUDAH"
+                    ? parseImportedNumber(
+                        hargaText
+                      )
+                    : 0;
+
+            imported.push({
+                id:
+                    Date.now() +
+                    index +
+                    data.length,
+
+                tanggal:
+                    normalizeImportedDate(
+                        tanggal
+                    ),
+
+                waktu:
+                    waktu,
+
+                nama:
+                    nama,
+
+                jenis:
+                    jenis,
+
+                sabun:
+                    parseImportedNumber(
+                        sabunText
+                    ),
+
+                pewangi:
+                    parseImportedNumber(
+                        pewangiText
+                    ),
+
+                harga:
+                    harga,
+
+                bayar:
+                    bayar ||
+                    (
+                        harga > 0
+                            ? "SUDAH"
+                            : "BELUM"
+                    ),
+
+                metode:
+                    bayar === "SUDAH"
+                        ? normalizeImportedMethod(
+                            metodeText
+                          )
+                        : ""
+            });
+
+        }
+    );
+
+    return imported;
+
+}
+
+
+function readExcelAsHTML(
+    file
+){
+
+    return new Promise(
+        function(resolve,reject){
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function(event){
+
+                    try{
+
+                        const bytes =
+                            new Uint8Array(
+                                event.target.result
+                            );
+
+                        const text =
+                            new TextDecoder(
+                                "utf-8"
+                            ).decode(
+                                bytes
+                            );
+
+                        if(
+                            !text
+                                .toLowerCase()
+                                .includes(
+                                    "<table"
+                                )
+                        ){
+                            reject(
+                                new Error(
+                                    "Bukan file Excel HTML."
+                                )
+                            );
+
+                            return;
+                        }
+
+                        const parser =
+                            new DOMParser();
+
+                        const doc =
+                            parser.parseFromString(
+                                text,
+                                "text/html"
+                            );
+
+                        const table =
+                            doc.querySelector(
+                                "table"
+                            );
+
+                        if(!table){
+                            reject(
+                                new Error(
+                                    "Tabel Excel tidak ditemukan."
+                                )
+                            );
+
+                            return;
+                        }
+
+                        resolve(
+                            [
+                                ...table.querySelectorAll(
+                                    "tbody tr"
+                                )
+                            ]
+                        );
+
+                    }catch(error){
+
+                        reject(
+                            error
+                        );
+
+                    }
+
+                };
+
+            reader.onerror =
+                function(){
+
+                    reject(
+                        new Error(
+                            "File tidak dapat dibaca."
+                        )
+                    );
+
+                };
+
+            reader.readAsArrayBuffer(
+                file
+            );
+
+        }
+    );
+
+}
+
+
+excelUpload.addEventListener(
+    "change",
+    async function(event){
+
+        const file =
+            event.target.files &&
+            event.target.files[0];
+
+        if(!file){
+            return;
+        }
+
+        try{
+
+            const extension =
+                file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+            if(
+                extension !== "xls"
+            ){
+
+                alert(
+                    "Silakan pilih file .xls hasil EXPORT EXCEL dari program ini."
+                );
+
+                return;
+
+            }
+
+            const rows =
+                await readExcelAsHTML(
+                    file
+                );
+
+            const importedData =
+                convertImportedRowsToData(
+                    rows
+                );
+
+            if(
+                importedData.length === 0
+            ){
+
+                alert(
+                    "Tidak ada data History yang dapat dibaca dari file Excel."
+                );
+
+                return;
+
+            }
+
+            const yakin =
+                confirm(
+                    `Ditemukan ${importedData.length} data History. Data akan ditambahkan ke History yang sekarang. Lanjutkan?`
+                );
+
+            if(!yakin){
+                return;
+            }
+
+            data =
+                [
+                    ...importedData,
+                    ...data
+                ];
+
+            saveData();
+
+            renderTable();
+
+            alert(
+                `${importedData.length} data berhasil dimasukkan ke History.`
+            );
+
+        }catch(error){
+
+            console.error(
+                "Gagal membaca Excel:",
+                error
+            );
+
+            alert(
+                "File Excel tidak dapat dibaca. Pastikan file tersebut adalah hasil EXPORT EXCEL dari program ini."
+            );
+
+        }finally{
+
+            event.target.value =
+                "";
+
+        }
+
+    }
+);
 
 
 /* =========================================================
