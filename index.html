@@ -3638,6 +3638,89 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
     }
 }
 
+
+/* =========================================================
+   DASHBOARD FINAL - PREMIUM, TANPA KARTU PUTIH
+   Hanya mengubah warna/tampilan dashboard.
+========================================================= */
+
+.dashboard-card.blue{
+    background:linear-gradient(135deg,#2563EB 0%,#38BDF8 100%) !important;
+}
+
+.dashboard-card.green{
+    background:linear-gradient(135deg,#059669 0%,#34D399 100%) !important;
+}
+
+.dashboard-card.orange{
+    background:linear-gradient(135deg,#F97316 0%,#FDBA74 100%) !important;
+}
+
+.dashboard-card.red{
+    background:linear-gradient(135deg,#E11D48 0%,#FB7185 100%) !important;
+}
+
+.dashboard-card.purple{
+    background:linear-gradient(135deg,#7C3AED 0%,#A78BFA 100%) !important;
+}
+
+.dashboard-card.teal{
+    background:linear-gradient(135deg,#0F766E 0%,#2DD4BF 100%) !important;
+}
+
+.dashboard-card.dark{
+    background:linear-gradient(135deg,#334155 0%,#64748B 100%) !important;
+}
+
+.dashboard-card.cyan{
+    background:linear-gradient(135deg,#0891B2 0%,#22D3EE 100%) !important;
+}
+
+.dashboard-card{
+    position:relative;
+    overflow:hidden;
+    color:#fff !important;
+    border:1px solid rgba(255,255,255,.20) !important;
+    box-shadow:
+        0 8px 20px rgba(30,55,90,.14),
+        inset 0 1px 0 rgba(255,255,255,.20) !important;
+}
+
+.dashboard-card::after{
+    content:"";
+    position:absolute;
+    width:90px;
+    height:90px;
+    right:-28px;
+    top:-35px;
+    border-radius:50%;
+    background:rgba(255,255,255,.12);
+    pointer-events:none;
+}
+
+.dashboard-card h3,
+.dashboard-card strong{
+    position:relative;
+    z-index:1;
+    color:#fff !important;
+}
+
+.dashboard-card h3{
+    opacity:.94;
+}
+
+.dashboard-card strong{
+    text-shadow:0 1px 3px rgba(0,0,0,.12);
+}
+
+/* HP: dashboard tetap berwarna dan tidak berubah menjadi putih */
+@media(max-width:650px){
+    .dashboard-card{
+        min-height:78px;
+        border-radius:12px;
+    }
+}
+
 </style>
 
 </head>
