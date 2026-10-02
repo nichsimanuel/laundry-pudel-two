@@ -3726,6 +3726,320 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
     clip-path: inset(0 round 22px) !important;
 }
 
+
+/* =========================================================
+   HISTORY FULLSCREEN / POP-UP KACA PEMBESAR
+   Hanya menambah tampilan pop-up untuk melihat History penuh.
+   Tidak mengubah workflow, data, filter, edit, hapus, atau
+   tata letak tombol sistem utama.
+========================================================= */
+
+.history-title-area{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+}
+
+.history-title-area h2{
+    margin-bottom:0 !important;
+}
+
+.history-fullscreen-btn{
+    width:38px;
+    height:38px;
+    min-width:38px;
+    padding:0;
+    border-radius:10px;
+    background:#EAF4F7;
+    color:#35566A;
+    border:1px solid #C9DDE6;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size:19px;
+    line-height:1;
+    box-shadow:0 3px 8px rgba(30,55,90,.08);
+    cursor:pointer;
+    touch-action:manipulation;
+    -webkit-user-select:none;
+    user-select:none;
+}
+
+.history-fullscreen-btn:hover{
+    background:#DCEEF7;
+    transform:translateY(-1px);
+}
+
+.history-fullscreen-btn:active{
+    transform:translateY(0);
+}
+
+/* POP-UP TIDAK TERLIHAT SEBELUM TOMBOL DIKLIK */
+.history-fullscreen-overlay{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:none;
+    width:100vw;
+    height:100vh;
+    height:100dvh;
+    padding:14px;
+    background:rgba(10,24,34,.72);
+    backdrop-filter:blur(7px);
+    -webkit-backdrop-filter:blur(7px);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+}
+
+.history-fullscreen-overlay.show{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+.history-fullscreen-panel{
+    width:100%;
+    height:100%;
+    max-width:1900px;
+    max-height:calc(100dvh - 28px);
+    background:#FFFFFF;
+    border:1px solid rgba(255,255,255,.75);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 20px 65px rgba(0,0,0,.30);
+    display:flex;
+    flex-direction:column;
+}
+
+.history-fullscreen-header{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:13px 16px;
+    background:linear-gradient(
+        135deg,
+        #DFF4F2 0%,
+        #DCEEF7 50%,
+        #E9EAF8 100%
+    );
+    border-bottom:1px solid #C9DDE6;
+}
+
+.history-fullscreen-title{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+}
+
+.history-fullscreen-icon{
+    width:40px;
+    height:40px;
+    min-width:40px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(255,255,255,.78);
+    border:1px solid #C9DDE6;
+    font-size:19px;
+}
+
+.history-fullscreen-title h2{
+    margin:0 !important;
+    color:#35566A;
+    font-size:19px;
+    line-height:1.2;
+}
+
+.history-fullscreen-title p{
+    margin:3px 0 0;
+    color:#6B8491;
+    font-size:12px;
+}
+
+.history-fullscreen-close{
+    width:42px;
+    height:42px;
+    min-width:42px;
+    padding:0;
+    border-radius:10px;
+    background:#F05A47;
+    color:#FFFFFF;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:800;
+    line-height:1;
+}
+
+.history-fullscreen-content{
+    flex:1 1 auto;
+    min-height:0;
+    padding:12px;
+    background:#F5F9FB;
+}
+
+.history-fullscreen-table-wrapper{
+    width:100%;
+    height:100%;
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    touch-action:pan-x pan-y pinch-zoom;
+    border:1px solid #D6E4EA;
+    border-radius:10px;
+    background:#FFFFFF;
+    scrollbar-width:thin;
+}
+
+.history-fullscreen-table-wrapper .history-table{
+    width:100%;
+    min-width:1050px;
+    margin:0;
+    border:none;
+    border-radius:0;
+}
+
+.history-fullscreen-table-wrapper .history-table th{
+    position:sticky;
+    top:0;
+    z-index:4;
+}
+
+.history-fullscreen-table-wrapper .history-table td{
+    white-space:nowrap;
+}
+
+/* Pop-up hanya untuk melihat data, jadi Edit/Hapus disembunyikan. */
+.history-fullscreen-table-wrapper .action-column{
+    display:none !important;
+}
+
+.history-fullscreen-table-wrapper .history-table th:last-child{
+    display:none !important;
+}
+
+/* MODE MALAM */
+body.dark-theme .history-fullscreen-overlay{
+    background:rgba(0,0,0,.80);
+}
+
+body.dark-theme .history-fullscreen-panel{
+    background:#17242E;
+    border-color:#344A56;
+}
+
+body.dark-theme .history-fullscreen-header{
+    background:linear-gradient(
+        135deg,
+        #294454 0%,
+        #31596A 50%,
+        #35496A 100%
+    );
+    border-color:#46616E;
+}
+
+body.dark-theme .history-fullscreen-title h2{
+    color:#F4FAFC;
+}
+
+body.dark-theme .history-fullscreen-title p{
+    color:#B7C9D2;
+}
+
+body.dark-theme .history-fullscreen-icon{
+    background:rgba(15,27,36,.68);
+    border-color:#46616E;
+}
+
+body.dark-theme .history-fullscreen-content{
+    background:#0F1B24;
+}
+
+body.dark-theme .history-fullscreen-table-wrapper{
+    background:#17242E;
+    border-color:#344A56;
+}
+
+/* HP */
+@media(max-width:650px){
+
+    .history-title-area{
+        width:100%;
+        justify-content:flex-start;
+    }
+
+    .history-fullscreen-btn{
+        width:40px;
+        height:40px;
+        min-width:40px;
+        font-size:18px;
+    }
+
+    .history-fullscreen-overlay{
+        padding:5px;
+    }
+
+    .history-fullscreen-panel{
+        width:100%;
+        height:calc(100dvh - 10px);
+        max-height:calc(100dvh - 10px);
+        border-radius:12px;
+    }
+
+    .history-fullscreen-header{
+        padding:10px 11px;
+    }
+
+    .history-fullscreen-icon{
+        width:36px;
+        height:36px;
+        min-width:36px;
+        font-size:17px;
+    }
+
+    .history-fullscreen-title h2{
+        font-size:16px;
+    }
+
+    .history-fullscreen-title p{
+        font-size:10px;
+    }
+
+    .history-fullscreen-close{
+        width:38px;
+        height:38px;
+        min-width:38px;
+        font-size:16px;
+        border-radius:9px;
+    }
+
+    .history-fullscreen-content{
+        padding:7px;
+    }
+
+    .history-fullscreen-table-wrapper{
+        border-radius:8px;
+    }
+}
+
+/* Jangan ikut tercetak */
+@media print{
+    .history-fullscreen-overlay,
+    .history-fullscreen-btn{
+        display:none !important;
+    }
+}
+
 </style>
 
 </head>
@@ -4449,11 +4763,25 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
 
 
 
-            <h2>
+            <div class="history-title-area">
 
-                Pembukuan
+                <h2>
 
-            </h2>
+                    Pembukuan
+
+                </h2>
+
+                <button
+                    type="button"
+                    class="history-fullscreen-btn"
+                    id="historyFullscreenBtn"
+                    title="Lihat tabel History secara penuh"
+                    aria-label="Lihat tabel History secara penuh"
+                >
+                    🔍
+                </button>
+
+            </div>
 
 
 
@@ -8284,6 +8612,7 @@ td:nth-child(10){
 
 
 
+
 </style>
 
 
@@ -9903,9 +10232,318 @@ saveLocalData();
     });
 })();
 
+
+
+
+
+
+
 </script>
 
 
+<!-- =========================================================
+     HISTORY FULLSCREEN / POP-UP
+     Tabel hanya dibuat ketika tombol 🔍 ditekan.
+========================================================= -->
+<div
+    class="history-fullscreen-overlay"
+    id="historyFullscreenOverlay"
+    aria-hidden="true"
+>
+    <div
+        class="history-fullscreen-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="historyFullscreenTitle"
+    >
+
+        <div class="history-fullscreen-header">
+
+            <div class="history-fullscreen-title">
+
+                <span class="history-fullscreen-icon" aria-hidden="true">
+                    🔍
+                </span>
+
+                <div>
+                    <h2 id="historyFullscreenTitle">
+                        History Pembukuan
+                    </h2>
+
+                    <p>
+                        Tampilan tabel History secara penuh
+                    </p>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="history-fullscreen-close"
+                id="historyFullscreenClose"
+                title="Tutup tampilan penuh"
+                aria-label="Tutup tampilan penuh"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        <div class="history-fullscreen-content">
+
+            <div
+                class="history-fullscreen-table-wrapper"
+                id="historyFullscreenTableWrapper"
+            ></div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* =========================================================
+   HISTORY FULLSCREEN / POP-UP
+   Tidak mengubah sistem utama.
+========================================================= */
+
+(function(){
+
+    "use strict";
+
+    function initHistoryFullscreen(){
+
+        const openButton =
+            document.getElementById(
+                "historyFullscreenBtn"
+            );
+
+        const overlay =
+            document.getElementById(
+                "historyFullscreenOverlay"
+            );
+
+        const closeButton =
+            document.getElementById(
+                "historyFullscreenClose"
+            );
+
+        const fullscreenWrapper =
+            document.getElementById(
+                "historyFullscreenTableWrapper"
+            );
+
+        if(
+            !openButton ||
+            !overlay ||
+            !closeButton ||
+            !fullscreenWrapper
+        ){
+            return;
+        }
+
+        let previousBodyOverflow = "";
+
+        function refreshFullscreenTable(){
+
+            const originalTable =
+                document.querySelector(
+                    ".history-table"
+                );
+
+            if(!originalTable){
+
+                fullscreenWrapper.innerHTML = "";
+
+                return;
+            }
+
+            /*
+             * Clone tabel utama.
+             * Tabel asli tidak dipindahkan dan tidak diubah.
+             */
+            const clonedTable =
+                originalTable.cloneNode(true);
+
+            /*
+             * Sembunyikan kolom Edit Data pada pop-up.
+             * Pop-up ini khusus untuk melihat History secara penuh.
+             */
+            clonedTable
+                .querySelectorAll(
+                    ".action-column"
+                )
+                .forEach(
+                    function(cell){
+
+                        cell.remove();
+
+                    }
+                );
+
+            fullscreenWrapper.innerHTML = "";
+
+            fullscreenWrapper.appendChild(
+                clonedTable
+            );
+        }
+
+        function openFullscreen(){
+
+            /*
+             * Tabel pop-up baru dibuat ketika tombol 🔍 diklik.
+             * Jadi sebelum diklik, pop-up benar-benar tidak tampil.
+             */
+            refreshFullscreenTable();
+
+            previousBodyOverflow =
+                document.body.style.overflow;
+
+            overlay.classList.add("show");
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+            document.body.style.overflow =
+                "hidden";
+
+            fullscreenWrapper.scrollLeft = 0;
+            fullscreenWrapper.scrollTop = 0;
+        }
+
+        function closeFullscreen(){
+
+            overlay.classList.remove("show");
+
+            overlay.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+            /*
+             * Kosongkan clone setelah ditutup.
+             * Saat dibuka lagi, data diambil dari History terbaru.
+             */
+            fullscreenWrapper.innerHTML = "";
+
+            document.body.style.overflow =
+                previousBodyOverflow;
+
+            if(
+                window.matchMedia &&
+                window.matchMedia(
+                    "(pointer:fine)"
+                ).matches
+            ){
+                openButton.focus();
+            }
+        }
+
+        openButton.addEventListener(
+            "click",
+            openFullscreen
+        );
+
+        closeButton.addEventListener(
+            "click",
+            closeFullscreen
+        );
+
+        /*
+         * Klik area gelap di luar panel = tutup.
+         * Klik tabel/panel = tetap terbuka.
+         */
+        overlay.addEventListener(
+            "click",
+            function(event){
+
+                if(
+                    event.target === overlay
+                ){
+                    closeFullscreen();
+                }
+
+            }
+        );
+
+        /*
+         * ESC pada Windows/laptop = kembali ke tampilan normal.
+         */
+        document.addEventListener(
+            "keydown",
+            function(event){
+
+                if(
+                    event.key === "Escape" &&
+                    overlay.classList.contains(
+                        "show"
+                    )
+                ){
+                    closeFullscreen();
+                }
+
+            }
+        );
+
+        /*
+         * Tabel pop-up selalu mengikuti History terbaru
+         * ketika renderTable() dipanggil.
+         *
+         * Fungsi renderTable asli tetap dijalankan terlebih dahulu.
+         */
+        const originalRenderTable =
+            window.renderTable;
+
+        if(
+            typeof originalRenderTable ===
+            "function"
+        ){
+
+            window.renderTable =
+                function(){
+
+                    originalRenderTable.apply(
+                        this,
+                        arguments
+                    );
+
+                    if(
+                        overlay.classList.contains(
+                            "show"
+                        )
+                    ){
+                        refreshFullscreenTable();
+                    }
+
+                };
+        }
+    }
+
+    /*
+     * Elemen pop-up sudah berada di HTML sebelum script ini,
+     * sehingga aman dijalankan setelah DOM siap.
+     */
+    if(
+        document.readyState ===
+        "loading"
+    ){
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initHistoryFullscreen,
+            { once:true }
+        );
+
+    }else{
+
+        initHistoryFullscreen();
+
+    }
+
+})();
+</script>
 
 </body>
 
