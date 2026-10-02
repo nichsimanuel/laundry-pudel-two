@@ -9361,6 +9361,96 @@ td:nth-child(10){
 }
 
 /* =========================================================
+   TOMBOL ZOOM HISTORY - SIMPLE & RAMAH HP
+========================================================= */
+.history-table-zoom-bar{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:4px !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 0 6px !important;
+}
+
+.history-table-zoom-label,
+.history-table-zoom-value{
+    display:none !important;
+}
+
+.history-table-zoom-btn{
+    width:30px !important;
+    height:30px !important;
+    min-width:30px !important;
+    max-width:30px !important;
+    padding:0 !important;
+    margin:0 !important;
+    border:1px solid #C9DDE6 !important;
+    border-radius:6px !important;
+    background:#EAF4F7 !important;
+    color:#35566A !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-family:Arial,sans-serif !important;
+    font-size:18px !important;
+    font-weight:700 !important;
+    line-height:1 !important;
+    cursor:pointer !important;
+    touch-action:manipulation !important;
+    -webkit-tap-highlight-color:transparent !important;
+    -webkit-user-select:none !important;
+    user-select:none !important;
+    box-shadow:none !important;
+}
+
+.history-table-zoom-btn:hover{
+    background:#DCEEF7 !important;
+}
+
+.history-table-zoom-btn:active{
+    transform:scale(.94);
+}
+
+.history-table-zoom-btn:disabled{
+    opacity:.4 !important;
+    cursor:default !important;
+}
+
+body.dark-theme .history-table-zoom-btn{
+    background:#243B48 !important;
+    color:#F4FAFC !important;
+    border-color:#46616E !important;
+}
+
+@media(max-width:650px){
+    .history-table-zoom-bar{
+        gap:4px !important;
+        margin:0 0 5px !important;
+        padding:0 !important;
+    }
+
+    .history-table-zoom-btn{
+        width:28px !important;
+        height:28px !important;
+        min-width:28px !important;
+        max-width:28px !important;
+        border-radius:5px !important;
+        font-size:17px !important;
+    }
+}
+
+@media(max-width:360px){
+    .history-table-zoom-btn{
+        width:26px !important;
+        height:26px !important;
+        min-width:26px !important;
+        max-width:26px !important;
+        font-size:16px !important;
+    }
+}
+
+/* =========================================================
    POP-UP TIDAK IKUT TERCETAK
 ========================================================= */
 @media print{
