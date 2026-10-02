@@ -4703,6 +4703,18 @@ body.dark-theme .history-fullscreen-table-wrapper{
 }
 </style>
 
+
+<style id="history-popup-summary-color-swap">
+/* Pop-up History: warna mengikuti posisi baru */
+.history-fullscreen-total{
+    background:linear-gradient(135deg,#FE7D46 0%,#FF9F68 100%) !important;
+}
+
+.history-fullscreen-method{
+    background:linear-gradient(135deg,#7E57C2 0%,#9575CD 100%) !important;
+}
+</style>
+
 </head>
 
 
@@ -10952,21 +10964,6 @@ saveLocalData();
 
         <div class="history-fullscreen-summary">
 
-            <div class="history-fullscreen-total" id="historyFullscreenTotal">
-
-                <span class="history-fullscreen-total-label">
-                    Total Pendapatan
-                </span>
-
-                <strong
-                    class="history-fullscreen-total-value"
-                    id="historyFullscreenTotalValue"
-                >
-                    Rp 0
-                </strong>
-
-            </div>
-
             <div class="history-fullscreen-method" id="historyFullscreenMethod">
 
                 <span class="history-fullscreen-method-label">
@@ -10978,6 +10975,21 @@ saveLocalData();
                     id="historyFullscreenMethodValue"
                 >
                     Rp 0 / Rp 0
+                </strong>
+
+            </div>
+
+            <div class="history-fullscreen-total" id="historyFullscreenTotal">
+
+                <span class="history-fullscreen-total-label">
+                    Total Pendapatan
+                </span>
+
+                <strong
+                    class="history-fullscreen-total-value"
+                    id="historyFullscreenTotalValue"
+                >
+                    Rp 0
                 </strong>
 
             </div>
