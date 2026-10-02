@@ -3881,6 +3881,49 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
     line-height:1;
 }
 
+.history-fullscreen-summary{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin:10px 12px 0;
+}
+
+.history-fullscreen-total,
+.history-fullscreen-method{
+    padding:12px 16px;
+    border-radius:12px;
+    color:#FFFFFF;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    box-shadow:0 5px 14px rgba(30,55,90,.12);
+}
+
+.history-fullscreen-total{
+    background:linear-gradient(135deg,#7E57C2 0%,#9575CD 100%);
+}
+
+.history-fullscreen-method{
+    background:linear-gradient(135deg,#FE7D46 0%,#FF9F68 100%);
+}
+
+.history-fullscreen-total-label,
+.history-fullscreen-method-label{
+    font-size:12px;
+    font-weight:700;
+    opacity:.92;
+}
+
+.history-fullscreen-total-value,
+.history-fullscreen-method-value{
+    font-size:20px;
+    font-weight:900;
+    line-height:1.2;
+    white-space:nowrap;
+}
+
 .history-fullscreen-content{
     flex:1 1 auto;
     min-height:0;
@@ -3964,6 +4007,14 @@ body.dark-theme .history-fullscreen-icon{
     border-color:#46616E;
 }
 
+body.dark-theme .history-fullscreen-total{
+    background:linear-gradient(135deg,#5E4291 0%,#765BA8 100%);
+}
+
+body.dark-theme .history-fullscreen-method{
+    background:linear-gradient(135deg,#B75A31 0%,#C9784F 100%);
+}
+
 body.dark-theme .history-fullscreen-content{
     background:#0F1B24;
 }
@@ -4041,6 +4092,29 @@ body.dark-theme .history-fullscreen-table-wrapper{
         min-width:38px;
         font-size:16px;
         border-radius:9px;
+    }
+
+    .history-fullscreen-summary{
+        grid-template-columns:1fr 1fr;
+        gap:6px;
+        margin:7px 7px 0;
+    }
+
+    .history-fullscreen-total,
+    .history-fullscreen-method{
+        padding:10px 11px;
+        border-radius:10px;
+        gap:6px;
+    }
+
+    .history-fullscreen-total-label,
+    .history-fullscreen-method-label{
+        font-size:10px;
+    }
+
+    .history-fullscreen-total-value,
+    .history-fullscreen-method-value{
+        font-size:16px;
     }
 
     .history-fullscreen-content{
@@ -4765,7 +4839,7 @@ body.dark-theme .history-fullscreen-table-wrapper{
 
                 <h3>
 
-                    Cash / QRIS (Rp)
+                    Cash / QRIS
 
                 </h3>
 
@@ -10341,7 +10415,7 @@ saveLocalData();
                     </h2>
 
                     <p>
-                        History penuh • Metode pembayaran tetap ditampilkan
+                        Fullscreen History
                     </p>
                 </div>
 
@@ -10356,6 +10430,40 @@ saveLocalData();
             >
                 ✕
             </button>
+
+        </div>
+
+        <div class="history-fullscreen-summary">
+
+            <div class="history-fullscreen-total" id="historyFullscreenTotal">
+
+                <span class="history-fullscreen-total-label">
+                    Total Pendapatan
+                </span>
+
+                <strong
+                    class="history-fullscreen-total-value"
+                    id="historyFullscreenTotalValue"
+                >
+                    Rp 0
+                </strong>
+
+            </div>
+
+            <div class="history-fullscreen-method" id="historyFullscreenMethod">
+
+                <span class="history-fullscreen-method-label">
+                    Cash / QRIS
+                </span>
+
+                <strong
+                    class="history-fullscreen-method-value"
+                    id="historyFullscreenMethodValue"
+                >
+                    Rp 0 / Rp 0
+                </strong>
+
+            </div>
 
         </div>
 
@@ -10403,11 +10511,23 @@ saveLocalData();
                 "historyFullscreenTableWrapper"
             );
 
+        const fullscreenTotalValue =
+            document.getElementById(
+                "historyFullscreenTotalValue"
+            );
+
+        const fullscreenMethodValue =
+            document.getElementById(
+                "historyFullscreenMethodValue"
+            );
+
         if(
             !openButton ||
             !overlay ||
             !closeButton ||
-            !fullscreenWrapper
+            !fullscreenWrapper ||
+            !fullscreenTotalValue ||
+            !fullscreenMethodValue
         ){
             return;
         }
@@ -10450,6 +10570,70 @@ saveLocalData();
                         cell.remove();
                     }
                 );
+
+            /*
+             * Total Pendapatan mengikuti data History yang sedang
+             * ditampilkan, termasuk ketika filter/search sedang aktif.
+             */
+            const fullscreenData =
+                typeof getFilteredData === "function"
+                    ? getFilteredData()
+                    : [];
+
+            const fullscreenTotal =
+                fullscreenData.reduce(
+                    function(sum,item){
+                        return sum + (
+                            item.bayar === "SUDAH"
+                                ? Number(item.harga) || 0
+                                : 0
+                        );
+                    },
+                    0
+                );
+
+            const fullscreenCash =
+                fullscreenData.reduce(
+                    function(sum,item){
+                        return sum + (
+                            item.bayar === "SUDAH" &&
+                            String(item.metode || "").toUpperCase() === "CASH"
+                                ? Number(item.harga) || 0
+                                : 0
+                        );
+                    },
+                    0
+                );
+
+            const fullscreenQris =
+                fullscreenData.reduce(
+                    function(sum,item){
+                        return sum + (
+                            item.bayar === "SUDAH" &&
+                            String(item.metode || "").toUpperCase() === "QRIS"
+                                ? Number(item.harga) || 0
+                                : 0
+                        );
+                    },
+                    0
+                );
+
+            const formatFullscreenMethod =
+                typeof formatRupiah === "function"
+                    ? formatRupiah
+                    : function(value){
+                        return "Rp " + value.toLocaleString("id-ID");
+                    };
+
+            fullscreenMethodValue.textContent =
+                formatFullscreenMethod(fullscreenCash) +
+                " / " +
+                formatFullscreenMethod(fullscreenQris);
+
+            fullscreenTotalValue.textContent =
+                typeof formatRupiah === "function"
+                    ? formatRupiah(fullscreenTotal)
+                    : "Rp " + fullscreenTotal.toLocaleString("id-ID");
 
             fullscreenWrapper.innerHTML = "";
 
