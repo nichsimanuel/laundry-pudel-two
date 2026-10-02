@@ -4447,6 +4447,262 @@ body.dark-theme .history-fullscreen-table-wrapper{
 
 </style>
 
+
+<style>
+/* =========================================================
+   FINAL POP-UP HISTORY - RAPI & NYAMAN
+   Hanya memperbaiki tampilan pop-up History.
+   Fungsi, data, filter, edit/hapus, dan tombol utama tetap.
+   Di HP tabel boleh digeser kiri-kanan.
+========================================================= */
+
+.history-fullscreen-overlay{
+    padding:14px !important;
+}
+
+.history-fullscreen-panel{
+    width:min(1400px, 100%) !important;
+    height:min(92vh, 900px) !important;
+    max-width:1400px !important;
+    max-height:92vh !important;
+    border-radius:16px !important;
+    overflow:hidden !important;
+    display:flex !important;
+    flex-direction:column !important;
+}
+
+.history-fullscreen-header{
+    flex:0 0 auto !important;
+    padding:13px 16px !important;
+}
+
+.history-fullscreen-title{
+    min-width:0 !important;
+}
+
+.history-fullscreen-title h2{
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+}
+
+.history-fullscreen-summary{
+    flex:0 0 auto !important;
+}
+
+.history-fullscreen-content{
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    padding:10px !important;
+    overflow:hidden !important;
+}
+
+.history-fullscreen-table-wrapper{
+    width:100% !important;
+    height:100% !important;
+    min-height:0 !important;
+    overflow:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior:contain !important;
+    touch-action:pan-x pan-y pinch-zoom !important;
+    border-radius:10px !important;
+}
+
+.history-fullscreen-table-wrapper .history-table{
+    width:100% !important;
+    min-width:1050px !important;
+    max-width:none !important;
+    table-layout:auto !important;
+    margin:0 !important;
+}
+
+.history-fullscreen-table-wrapper .history-table th,
+.history-fullscreen-table-wrapper .history-table td{
+    white-space:nowrap !important;
+    overflow-wrap:normal !important;
+    word-break:normal !important;
+}
+
+.history-fullscreen-table-wrapper .history-table th{
+    position:sticky !important;
+    top:0 !important;
+    z-index:10 !important;
+}
+
+@media(max-width:650px){
+
+    .history-fullscreen-overlay{
+        padding:
+            max(5px, env(safe-area-inset-top))
+            max(5px, env(safe-area-inset-right))
+            max(5px, env(safe-area-inset-bottom))
+            max(5px, env(safe-area-inset-left)) !important;
+        align-items:stretch !important;
+        justify-content:stretch !important;
+    }
+
+    .history-fullscreen-panel{
+        width:100% !important;
+        height:calc(100dvh - 10px) !important;
+        max-width:none !important;
+        max-height:none !important;
+        border-radius:12px !important;
+    }
+
+    .history-fullscreen-header{
+        padding:10px 11px !important;
+    }
+
+    .history-fullscreen-summary{
+        grid-template-columns:1fr 1fr !important;
+        gap:6px !important;
+        margin:6px 6px 0 !important;
+    }
+
+    .history-fullscreen-total,
+    .history-fullscreen-method{
+        min-height:50px !important;
+        height:auto !important;
+        padding:8px 9px !important;
+        border-radius:9px !important;
+        gap:5px !important;
+    }
+
+    .history-fullscreen-total-label,
+    .history-fullscreen-method-label{
+        font-size:9px !important;
+        line-height:1.15 !important;
+        white-space:nowrap !important;
+    }
+
+    .history-fullscreen-total-value,
+    .history-fullscreen-method-value{
+        font-size:12px !important;
+        line-height:1.15 !important;
+        white-space:nowrap !important;
+        overflow:visible !important;
+        word-break:normal !important;
+    }
+
+    .history-fullscreen-content{
+        padding:7px !important;
+        overflow:hidden !important;
+    }
+
+    .history-fullscreen-table-wrapper{
+        width:100% !important;
+        height:100% !important;
+        overflow-x:auto !important;
+        overflow-y:auto !important;
+        -webkit-overflow-scrolling:touch !important;
+        touch-action:pan-x pan-y pinch-zoom !important;
+        scrollbar-width:thin !important;
+        scrollbar-color:#9FB9C6 #EEF4F6 !important;
+    }
+
+    .history-fullscreen-table-wrapper::-webkit-scrollbar{
+        width:8px;
+        height:8px;
+    }
+
+    .history-fullscreen-table-wrapper::-webkit-scrollbar-track{
+        background:#EEF4F6;
+        border-radius:10px;
+    }
+
+    .history-fullscreen-table-wrapper::-webkit-scrollbar-thumb{
+        background:#9FB9C6;
+        border-radius:10px;
+    }
+
+    .history-fullscreen-table-wrapper .history-table{
+        width:max-content !important;
+        min-width:1050px !important;
+        table-layout:auto !important;
+    }
+
+    .history-fullscreen-table-wrapper .history-table th{
+        padding:9px 8px !important;
+        font-size:11px !important;
+        white-space:nowrap !important;
+    }
+
+    .history-fullscreen-table-wrapper .history-table td{
+        padding:8px 8px !important;
+        font-size:11px !important;
+        white-space:nowrap !important;
+    }
+
+    .history-fullscreen-table-wrapper .history-table .price{
+        white-space:nowrap !important;
+    }
+
+    /* Petunjuk visual bahwa tabel dapat digeser horizontal */
+    .history-fullscreen-content::after{
+        content:"Geser tabel ke kiri/kanan untuk melihat kolom lainnya";
+        display:block;
+        text-align:center;
+        padding:5px 4px 0;
+        font-size:9px;
+        color:#78909C;
+        line-height:1.2;
+        pointer-events:none;
+    }
+
+    body.dark-theme .history-fullscreen-content::after{
+        color:#8FA7B2;
+    }
+
+    body.dark-theme .history-fullscreen-table-wrapper{
+        scrollbar-color:#506A76 #172730 !important;
+    }
+
+    body.dark-theme .history-fullscreen-table-wrapper::-webkit-scrollbar-track{
+        background:#172730;
+    }
+
+    body.dark-theme .history-fullscreen-table-wrapper::-webkit-scrollbar-thumb{
+        background:#506A76;
+    }
+}
+
+@media(max-width:380px){
+
+    .history-fullscreen-header{
+        padding:9px 9px !important;
+    }
+
+    .history-fullscreen-summary{
+        gap:5px !important;
+        margin:5px 5px 0 !important;
+    }
+
+    .history-fullscreen-total,
+    .history-fullscreen-method{
+        min-height:46px !important;
+        padding:7px 8px !important;
+    }
+
+    .history-fullscreen-content{
+        padding:5px !important;
+    }
+
+    .history-fullscreen-table-wrapper .history-table{
+        min-width:1000px !important;
+    }
+
+    .history-fullscreen-table-wrapper .history-table th{
+        padding:8px 7px !important;
+        font-size:10px !important;
+    }
+
+    .history-fullscreen-table-wrapper .history-table td{
+        padding:7px !important;
+        font-size:10px !important;
+    }
+}
+</style>
+
 </head>
 
 
