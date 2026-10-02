@@ -5598,7 +5598,7 @@ body.dark-theme .history-fullscreen-table-wrapper{
 
                         <th>
 
-                            METODE PEMBAYAARAN
+                            METODE PEMBAYARAN
 
                         </th>
 
@@ -9285,6 +9285,50 @@ td:nth-child(10){
 
 
 
+
+
+
+/* =========================================================
+   FINAL POP-UP HISTORY
+   URUTAN SUMMARY:
+   1. CASH / QRIS
+   2. TOTAL PENDAPATAN
+
+   Hanya mengubah urutan tampilan dua kartu summary
+   di dalam pop-up History. Sistem, perhitungan, data,
+   filter, tabel, dan tata letak tombol tetap sama.
+========================================================= */
+
+.history-fullscreen-summary{
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto auto !important;
+}
+
+.history-fullscreen-summary .history-fullscreen-method{
+    order:1 !important;
+}
+
+.history-fullscreen-summary .history-fullscreen-total{
+    order:2 !important;
+}
+
+/* HP tetap satu kolom: CASH / QRIS paling atas,
+   Total Pendapatan tepat di bawahnya. */
+@media(max-width:650px){
+    .history-fullscreen-summary{
+        grid-template-columns:1fr !important;
+        grid-template-rows:auto auto !important;
+        gap:5px !important;
+    }
+
+    .history-fullscreen-summary .history-fullscreen-method{
+        order:1 !important;
+    }
+
+    .history-fullscreen-summary .history-fullscreen-total{
+        order:2 !important;
+    }
+}
 
 </style>
 
