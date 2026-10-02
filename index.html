@@ -3891,14 +3891,37 @@ body.dark-theme .table-wrapper::-webkit-scrollbar-thumb{
 
 .history-fullscreen-total,
 .history-fullscreen-method{
-    padding:12px 16px;
+    min-width:0;
+    min-height:58px;
+    padding:11px 16px;
     border-radius:12px;
     color:#FFFFFF;
-    display:flex;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
     align-items:center;
-    justify-content:space-between;
     gap:12px;
     box-shadow:0 5px 14px rgba(30,55,90,.12);
+}
+
+.history-fullscreen-total-label,
+.history-fullscreen-method-label{
+    min-width:0;
+    font-size:clamp(10px,1.25vw,13px);
+    font-weight:700;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.history-fullscreen-total-value,
+.history-fullscreen-method-value{
+    min-width:0;
+    font-size:clamp(14px,1.8vw,20px);
+    font-weight:900;
+    line-height:1.2;
+    white-space:nowrap;
+    text-align:right;
 }
 
 .history-fullscreen-total{
@@ -4107,14 +4130,21 @@ body.dark-theme .history-fullscreen-table-wrapper{
         gap:6px;
     }
 
+    .history-fullscreen-total,
+    .history-fullscreen-method{
+        min-height:52px;
+        padding:9px 10px;
+        gap:7px;
+    }
+
     .history-fullscreen-total-label,
     .history-fullscreen-method-label{
-        font-size:10px;
+        font-size:clamp(9px,2.7vw,11px);
     }
 
     .history-fullscreen-total-value,
     .history-fullscreen-method-value{
-        font-size:16px;
+        font-size:clamp(11px,3.6vw,16px);
     }
 
     .history-fullscreen-content{
@@ -4839,7 +4869,7 @@ body.dark-theme .history-fullscreen-table-wrapper{
 
                 <h3>
 
-                    Cash / QRIS
+                    Cash / QRIS (Rp)
 
                 </h3>
 
@@ -10415,7 +10445,7 @@ saveLocalData();
                     </h2>
 
                     <p>
-                        Fullscreen History
+                        History penuh • Metode pembayaran tetap ditampilkan
                     </p>
                 </div>
 
@@ -10453,7 +10483,7 @@ saveLocalData();
             <div class="history-fullscreen-method" id="historyFullscreenMethod">
 
                 <span class="history-fullscreen-method-label">
-                    Cash / QRIS
+                    Cash / QRIS (Rp)
                 </span>
 
                 <strong
