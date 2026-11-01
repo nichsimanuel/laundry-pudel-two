@@ -264,6 +264,13 @@ select {
     background-repeat: no-repeat;
     padding-right: 32px !important;
 }
+.jasa-group { position: relative; }
+.jasa-hint { margin-top: 4px; font-size: 12px; font-weight: 700; color: #0D9488; min-height: 15px; line-height: 15px; }
+@media (min-width: 651px) {
+    .jasa-group::after { content: "\00D7"; position: absolute; right: -14px; top: 22px; width: 14px; height: 44px; line-height: 44px; text-align: center; font-size: 16px; font-weight: 800; color: #486579; pointer-events: none; }
+}
+body.dark-theme .jasa-group::after { color: #B7C9D2; }
+body.dark-theme .jasa-hint { color: #5EEAD4; }
 .button-area {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1189,7 +1196,7 @@ body.dark-theme .stock-neg { color: #FB7185; }
                 <div class="form-group"><label>Plastik (Opsional)</label><input type="number" id="plastik" min="0" placeholder="Jumlah Plastik"><input type="text" id="hargaPlastik" inputmode="numeric" placeholder="Harga Plastik (Rp)" style="margin-top:6px;"></div>
                 <div class="form-group"><label>Sabun (Opsional)</label><input type="number" id="sabun" min="0" placeholder="Jumlah Sabun"><input type="text" id="hargaSabun" inputmode="numeric" placeholder="Harga Sabun (Rp)" style="margin-top:6px;"></div>
                 <div class="form-group"><label>Pewangi (Opsional)</label><input type="number" id="pewangi" min="0" placeholder="Jumlah Pewangi"><input type="text" id="hargaPewangi" inputmode="numeric" placeholder="Harga Pewangi (Rp)" style="margin-top:6px;"></div>
-                <div class="form-group"><label>Berat Laundry (KG)</label><input type="number" id="kg" min="0" step="0.01" placeholder="Isi Kiloan"></div>
+                <div class="form-group"><label>Berat Laundry (KG)</label><input type="number" id="kg" min="0" step="0.01" placeholder="Isi Kiloan"><small class="jasa-hint" id="kgKoinHint"></small></div>
                 <div class="form-group">
                     <label>Bayar</label>
                     <select id="bayar" required>
@@ -1198,6 +1205,8 @@ body.dark-theme .stock-neg { color: #FB7185; }
                         <option value="BELUM">X Belum</option>
                     </select>
                 </div>
+                <div class="form-group jasa-group" id="jasaGroup" style="display:none;"><label>Jasa (Rp / KG)</label><input type="text" id="jasa" inputmode="numeric" placeholder="Isi Harga Jasa" disabled><small class="jasa-hint" id="jasaHint"></small></div>
+                <div class="form-group" id="kgJasaGroup" style="display:none;"><label>KG Jasa</label><input type="number" id="kgJasa" min="0" step="0.01" placeholder="Isi KG Jasa" disabled></div>
                 <div class="form-group">
                     <label>CASH / QRIS</label>
                     <select id="metode" required disabled>
@@ -1562,6 +1571,8 @@ body.dark-theme .stock-neg { color: #FB7185; }
                         <div><label>Sabun</label><input type="number" min="0" id="edSabun"><input type="text" id="edHargaSabun" inputmode="numeric" placeholder="Harga Sabun (Rp)" style="margin-top:5px;"></div>
                         <div><label>Pewangi</label><input type="number" min="0" id="edPewangi"><input type="text" id="edHargaPewangi" inputmode="numeric" placeholder="Harga Pewangi (Rp)" style="margin-top:5px;"></div>
                         <div><label>Berat Laundry (KG)</label><input type="number" min="0" step="0.01" id="edKg"></div>
+                        <div id="edJasaWrap" style="display:none;"><label>Jasa (Rp / KG) x KG Jasa</label><input type="text" id="edJasa" inputmode="numeric" placeholder="Harga Jasa per KG"><small id="edJasaHint" style="display:block;margin-top:4px;font-size:12px;font-weight:700;color:#0D9488;min-height:15px;"></small></div>
+                        <div id="edKgJasaWrap" style="display:none;"><label>KG Jasa</label><input type="number" min="0" step="0.01" id="edKgJasa" placeholder="KG untuk Jasa"></div>
                         <div><label>Bayar</label>
                             <select id="edBayar">
                                 <option value="SUDAH">Sudah</option>
@@ -1865,6 +1876,17 @@ function getDefaultCoins(jenis) {
     }
 }
 
+// Kapasitas 1 mesin = 8 KG, dengan toleransi 0.5 KG per beban (sampai 8.5 KG masih 1 beban).
+// Lebih dari itu dihitung beban tambahan, koin dikali jumlah beban.
+const KG_PER_LOAD = 8;
+const KG_TOLERANCE = 0.5;
+function calcLoads(kg) {
+    const k = Math.round((Number(kg) || 0) * 100) / 100;
+    if (k <= KG_PER_LOAD + KG_TOLERANCE) return 1;
+    return Math.ceil(Math.round((k - KG_TOLERANCE) * 100) / 100 / KG_PER_LOAD);
+}
+function calcKoin(jenis, kg) { return getDefaultCoins(jenis) * calcLoads(kg); }
+
 function getJenisLaundryFullName(jenis) {
     switch (jenis) {
         case 'CB': return 'Cuci Basah (CB)';
@@ -1899,6 +1921,47 @@ function getPayInfo(it) {
     const uang = (typeof it.uangBayar === "number" && it.uangBayar > 0) ? it.uangBayar : harga;
     const kembali = (typeof it.kembalian === "number") ? it.kembalian : Math.max(0, uang - harga);
     return { uang, kembali };
+}
+
+// ===== JASA (khusus CKG, CKGE, CKL): Jasa (Rp per KG) x KG, otomatis ditambahkan ke Harga / Total struk =====
+const JASA_TYPES = ["CKG", "CKGE", "CKL"];
+function isJasaType(j) { return JASA_TYPES.indexOf(j) !== -1; }
+function calcJasaTotal(jasa, kg) { return Math.round((Number(jasa) || 0) * (Number(kg) || 0)); }
+function jasaNum(n) { return (Number(n) || 0).toLocaleString("id-ID"); }
+function jasaBaseHarga(it) { return Math.max(0, (Number(it.harga) || 0) - (Number(it.jasaTotal) || 0)); }
+function jasaKg(it) { return Number(it.kgJasa) > 0 ? Number(it.kgJasa) : (Number(it.kg) || 0); }
+function jasaLabel(it) { return "\u2022 Jasa (" + jasaNum(it.jasa) + " x " + jasaKg(it) + " KG)"; }
+function jasaRowHtml(it) {
+    const t = Number(it.jasaTotal) || 0;
+    if (t <= 0) return "";
+    let h = `<div class="thermal-receipt-row"><span>${escapeHTML(jasaLabel(it))}</span><span>${formatRupiah(t)}</span></div>`;
+    const base = jasaBaseHarga(it);
+    if (base > 0) h += `<div class="thermal-receipt-row"><span>\u2022 Harga</span><span>${formatRupiah(base)}</span></div>`;
+    return h;
+}
+function jasaCanvasRows(it) {
+    const t = Number(it.jasaTotal) || 0;
+    if (t <= 0) return [];
+    const rows = [{ k: "row", l: jasaLabel(it), r: formatRupiah(t) }];
+    const base = jasaBaseHarga(it);
+    if (base > 0) rows.push({ k: "row", l: "\u2022 Harga", r: formatRupiah(base) });
+    return rows;
+}
+function jasaWaRows(it) {
+    const t = Number(it.jasaTotal) || 0;
+    if (t <= 0) return [];
+    let out = waRow(jasaLabel(it), formatRupiah(t));
+    const base = jasaBaseHarga(it);
+    if (base > 0) out = out.concat(waRow("\u2022 Harga", formatRupiah(base)));
+    return out;
+}
+function jasaTextLines(it) {
+    const t = Number(it.jasaTotal) || 0;
+    if (t <= 0) return "";
+    let x = "\r\n\u2022 Jasa      : " + jasaNum(it.jasa) + " x " + jasaKg(it) + " KG | " + formatRupiah(t);
+    const base = jasaBaseHarga(it);
+    if (base > 0) x += "\r\n\u2022 Harga     : " + formatRupiah(base);
+    return x;
 }
 
 // Saat tabel pembukuan layar penuh, hanya elemen di dalam layar penuh yang terlihat.
@@ -2197,9 +2260,16 @@ const metodeInput = document.getElementById("metode");
 const hargaInput = document.getElementById("harga");
 const uangBayarInput = document.getElementById("uangBayar");
 const kembalianInput = document.getElementById("kembalian");
+const jenisInput = document.getElementById("jenis");
+const kgInput = document.getElementById("kg");
+const jasaGroup = document.getElementById("jasaGroup");
+const jasaInput = document.getElementById("jasa");
+const kgJasaGroup = document.getElementById("kgJasaGroup");
+const kgJasaInput = document.getElementById("kgJasa");
+const jasaHint = document.getElementById("jasaHint");
 
 function updateKembalianForm() {
-    const harga = parseHarga(hargaInput.value);
+    const harga = parseHarga(hargaInput.value) + getFormJasaTotal();
     const uang = parseHarga(uangBayarInput.value);
     if (uangBayarInput.disabled || uang <= 0) {
         kembalianInput.value = "";
@@ -2256,14 +2326,68 @@ uangBayarInput.addEventListener("input", function() {
     updateKembalianForm();
 });
 
+// ---- Kolom Jasa (CKG / CKGE / CKL): Jasa (Rp per KG) x KG Jasa. KG Jasa berdiri sendiri, terpisah dari Berat Laundry ----
+function getFormJasaTotal() {
+    if (!isJasaType(jenisInput.value) || bayarInput.value !== "SUDAH") return 0;
+    return calcJasaTotal(parseHarga(jasaInput.value), kgJasaInput.value);
+}
+function updateJasaHint() {
+    const j = parseHarga(jasaInput.value);
+    const kg = Number(kgJasaInput.value) || 0;
+    jasaHint.textContent = (j > 0 && kg > 0) ? (formatRupiah(j) + " x " + kg + " KG = " + formatRupiah(calcJasaTotal(j, kg))) : "";
+}
+function updateJasaUI() {
+    const show = isJasaType(jenisInput.value);
+    const sudah = bayarInput.value === "SUDAH";
+    jasaGroup.style.display = show ? "" : "none";
+    kgJasaGroup.style.display = show ? "" : "none";
+    if (!show || !sudah) { jasaInput.value = ""; kgJasaInput.value = ""; }
+    jasaInput.disabled = !sudah;
+    kgJasaInput.disabled = !sudah;
+    jasaInput.placeholder = sudah ? "Rp 0" : "Tidak dapat diisi";
+    kgJasaInput.placeholder = sudah ? "Isi KG Jasa" : "Tidak dapat diisi";
+    updateJasaHint();
+    updateKembalianForm();
+}
+function updateKoinHint() {
+    const el = document.getElementById("kgKoinHint");
+    const kg = Number(kgInput.value) || 0;
+    if (!jenisInput.value || kg <= 0) { el.textContent = ""; return; }
+    const base = getDefaultCoins(jenisInput.value), loads = calcLoads(kg);
+    el.textContent = loads > 1
+        ? ("Koin: " + (base * loads) + " (" + loads + " beban x " + base + " koin)")
+        : ("Koin: " + base);
+}
+jenisInput.addEventListener("change", updateKoinHint);
+kgInput.addEventListener("input", updateKoinHint);
+bayarInput.addEventListener("change", updateKoinHint);
+jenisInput.addEventListener("change", updateJasaUI);
+bayarInput.addEventListener("change", updateJasaUI);
+kgJasaInput.addEventListener("input", function() {
+    if (this.disabled) return;
+    updateJasaHint();
+    updateKembalianForm();
+});
+jasaInput.addEventListener("input", function() {
+    if (this.disabled) return;
+    const a = parseHarga(this.value);
+    this.value = a > 0 ? formatRupiah(a) : "";
+    updateJasaHint();
+    updateKembalianForm();
+});
+
 form.addEventListener("submit", function(e) {
     e.preventDefault();
     const nama = document.getElementById("nama").value.trim();
     const jenis = document.getElementById("jenis").value;
     const bayar = bayarInput.value;
     const metode = metodeInput.value;
-    const harga = bayar === "SUDAH" ? parseHarga(hargaInput.value) : 0;
-    const koin = getDefaultCoins(jenis);
+    const hargaDasar = bayar === "SUDAH" ? parseHarga(hargaInput.value) : 0;
+    const jasa = (bayar === "SUDAH" && isJasaType(jenis)) ? parseHarga(jasaInput.value) : 0;
+    const kgJasa = jasa > 0 ? (Number(kgJasaInput.value) || 0) : 0;
+    const jasaTotal = calcJasaTotal(jasa, kgJasa);
+    const harga = hargaDasar + jasaTotal;
+    const koin = calcKoin(jenis, document.getElementById("kg").value);
     const plastik = Number(document.getElementById("plastik").value) || 0;
     const sabun = Number(document.getElementById("sabun").value) || 0;
     const pewangi = Number(document.getElementById("pewangi").value) || 0;
@@ -2271,6 +2395,11 @@ form.addEventListener("submit", function(e) {
     const hargaSabun = parseHarga(document.getElementById("hargaSabun").value);
     const hargaPewangi = parseHarga(document.getElementById("hargaPewangi").value);
     const kg = Number(document.getElementById("kg").value) || 0;
+
+    if (jasa > 0 && kgJasa <= 0) {
+        alert("Isi KG Jasa terlebih dahulu agar Jasa x KG bisa dihitung.");
+        return;
+    }
 
     // Jumlah Plastik / Sabun / Pewangi tidak boleh melebihi total stok
     const qtyInput = { plastik, sabun, pewangi };
@@ -2308,6 +2437,9 @@ form.addEventListener("submit", function(e) {
         kg,
         koin,
         harga,
+        jasa,
+        kgJasa,
+        jasaTotal,
         uangBayar,
         kembalian,
         bayar,
@@ -2549,18 +2681,19 @@ function updateEditKembali() {
     const harga = document.getElementById("edHarga");
     const uang = document.getElementById("edUang");
     if (harga.disabled) { out.value = ""; return; }
-    const h = parseHarga(harga.value);
+    const h = parseHarga(harga.value) + getEditJasaTotal();
     let u = parseHarga(uang.value);
     if (u <= 0) u = h;
     out.value = u >= h ? formatRupiah(u - h) : "Kurang " + formatRupiah(h - u);
 }
 
 function updateEditKoin() {
-    document.getElementById("edKoin").value = getDefaultCoins(document.getElementById("edJenis").value) + " Koin";
+    document.getElementById("edKoin").value = calcKoin(document.getElementById("edJenis").value, document.getElementById("edKg").value) + " Koin";
 }
 
 document.getElementById("edBayar").addEventListener("change", toggleEditPay);
 document.getElementById("edJenis").addEventListener("change", updateEditKoin);
+document.getElementById("edKg").addEventListener("input", updateEditKoin);
 document.getElementById("edHarga").addEventListener("input", function() {
     const a = parseHarga(this.value);
     this.value = a > 0 ? formatRupiah(a) : "";
@@ -2578,6 +2711,40 @@ document.getElementById("admEditCancel").addEventListener("click", () => {
     renderAdminList();
 });
 document.getElementById("admEditSave").addEventListener("click", () => window.saveEdit());
+
+// ---- Kolom Jasa pada panel edit (CKG / CKGE / CKL): KG Jasa berdiri sendiri, terpisah dari Berat Laundry ----
+function getEditJasaTotal() {
+    if (!isJasaType(document.getElementById("edJenis").value) || document.getElementById("edBayar").value !== "SUDAH") return 0;
+    return calcJasaTotal(parseHarga(document.getElementById("edJasa").value), document.getElementById("edKgJasa").value);
+}
+function updateEditJasaUI() {
+    const show = isJasaType(document.getElementById("edJenis").value);
+    const sudah = document.getElementById("edBayar").value === "SUDAH";
+    const inp = document.getElementById("edJasa");
+    const kgj = document.getElementById("edKgJasa");
+    const hint = document.getElementById("edJasaHint");
+    document.getElementById("edJasaWrap").style.display = show ? "" : "none";
+    document.getElementById("edKgJasaWrap").style.display = show ? "" : "none";
+    if (!show || !sudah) { inp.value = ""; kgj.value = ""; }
+    inp.disabled = !sudah;
+    kgj.disabled = !sudah;
+    const j = parseHarga(inp.value);
+    const kg = Number(kgj.value) || 0;
+    hint.textContent = (j > 0 && kg > 0) ? (formatRupiah(j) + " x " + kg + " KG = " + formatRupiah(calcJasaTotal(j, kg))) : "";
+    updateEditKembali();
+}
+document.getElementById("edJenis").addEventListener("change", updateEditJasaUI);
+document.getElementById("edBayar").addEventListener("change", updateEditJasaUI);
+document.getElementById("edKgJasa").addEventListener("input", function() {
+    if (this.disabled) return;
+    updateEditJasaUI();
+});
+document.getElementById("edJasa").addEventListener("input", function() {
+    if (this.disabled) return;
+    const a = parseHarga(this.value);
+    this.value = a > 0 ? formatRupiah(a) : "";
+    updateEditJasaUI();
+});
 
 window.startEdit = function(id) {
     requireAdmin(() => {
@@ -2600,10 +2767,14 @@ window.startEdit = function(id) {
         document.getElementById("edKg").value = it.kg || "";
         document.getElementById("edBayar").value = sudah ? "SUDAH" : "BELUM";
         document.getElementById("edMetode").value = it.metode === "QRIS" ? "QRIS" : "CASH";
-        document.getElementById("edHarga").value = sudah && it.harga ? formatRupiah(it.harga) : "";
+        const baseHarga = jasaBaseHarga(it);
+        document.getElementById("edHarga").value = sudah && baseHarga ? formatRupiah(baseHarga) : "";
+        document.getElementById("edJasa").value = sudah && it.jasa ? formatRupiah(it.jasa) : "";
+        document.getElementById("edKgJasa").value = sudah && it.jasa ? jasaKg(it) : "";
         document.getElementById("edUang").value = sudah && pay.uang ? formatRupiah(pay.uang) : "";
         updateEditKoin();
         toggleEditPay();
+        updateEditJasaUI();
         applyEditStockLimits(it);
 
         const box = document.getElementById("admEditBox");
@@ -2646,7 +2817,12 @@ window.saveEdit = function() {
         }
     }
 
-    const harga = bayar === "SUDAH" ? parseHarga(document.getElementById("edHarga").value) : 0;
+    const hargaDasarEd = bayar === "SUDAH" ? parseHarga(document.getElementById("edHarga").value) : 0;
+    const jasaEd = (bayar === "SUDAH" && isJasaType(jenis)) ? parseHarga(document.getElementById("edJasa").value) : 0;
+    const kgJasaEd = jasaEd > 0 ? (Number(document.getElementById("edKgJasa").value) || 0) : 0;
+    if (jasaEd > 0 && kgJasaEd <= 0) return alert("Isi KG Jasa terlebih dahulu agar Jasa x KG bisa dihitung.");
+    const jasaTotalEd = calcJasaTotal(jasaEd, kgJasaEd);
+    const harga = hargaDasarEd + jasaTotalEd;
     let uang = 0, kembali = 0;
     if (bayar === "SUDAH") {
         uang = parseHarga(document.getElementById("edUang").value);
@@ -2661,7 +2837,7 @@ window.saveEdit = function() {
     // Sesuaikan koin hari ini: cabut koin lama, tambah koin baru
     const oldKoin = it.koin || getDefaultCoins(it.jenis);
     const oldTanggal = it.tanggal;
-    const newKoin = getDefaultCoins(jenis);
+    const newKoin = calcKoin(jenis, document.getElementById("edKg").value);
     applyCoinDelta(oldTanggal, -oldKoin);
     applyCoinDelta(tanggal, newKoin);
 
@@ -2680,6 +2856,9 @@ window.saveEdit = function() {
     it.bayar = bayar;
     it.metode = bayar === "SUDAH" ? metode : "";
     it.harga = harga;
+    it.jasa = jasaEd;
+    it.kgJasa = kgJasaEd;
+    it.jasaTotal = jasaTotalEd;
     it.uangBayar = uang;
     it.kembalian = kembali;
 
@@ -2746,6 +2925,7 @@ window.openReceiptModal = function(id) {
         ${Number(it.plastik) > 0 ? `<div class="thermal-receipt-row"><span>• Plastik (${it.plastik} Pcs)</span><span>${Number(it.hargaPlastik) > 0 ? formatRupiah(it.hargaPlastik) : '-'}</span></div>` : ''}
         ${Number(it.sabun) > 0 ? `<div class="thermal-receipt-row"><span>• Sabun (${it.sabun} Sachet)</span><span>${Number(it.hargaSabun) > 0 ? formatRupiah(it.hargaSabun) : '-'}</span></div>` : ''}
         ${Number(it.pewangi) > 0 ? `<div class="thermal-receipt-row"><span>• Pewangi (${it.pewangi} Sachet)</span><span>${Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : '-'}</span></div>` : ''}
+        ${jasaRowHtml(it)}
         <div class="thermal-receipt-divider"></div>
         <div class="thermal-receipt-row">
             <span>Status</span>
@@ -2951,6 +3131,7 @@ window.printAllReceipts = function(doPrint = false, scope = null) {
             ${Number(it.plastik) > 0 ? `<div class="thermal-receipt-row"><span>• Plastik (${it.plastik} Pcs)</span><span>${Number(it.hargaPlastik) > 0 ? formatRupiah(it.hargaPlastik) : '-'}</span></div>` : ''}
             ${Number(it.sabun) > 0 ? `<div class="thermal-receipt-row"><span>• Sabun (${it.sabun} Sachet)</span><span>${Number(it.hargaSabun) > 0 ? formatRupiah(it.hargaSabun) : '-'}</span></div>` : ''}
             ${Number(it.pewangi) > 0 ? `<div class="thermal-receipt-row"><span>• Pewangi (${it.pewangi} Sachet)</span><span>${Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : '-'}</span></div>` : ''}
+            ${jasaRowHtml(it)}
             <div class="thermal-receipt-divider"></div>
             <div class="thermal-receipt-row"><span>Status</span><span class="receipt-stamp">LUNAS</span></div>
             <div class="thermal-receipt-row"><span>Metode</span><span style="font-weight:bold;">${escapeHTML(it.metode)}</span></div>
@@ -3146,6 +3327,7 @@ function drawReceiptCanvas(it, logoImg) {
     if (Number(it.plastik) > 0) items.push({ k: "row", l: "• Plastik (" + it.plastik + " Pcs)", r: Number(it.hargaPlastik) > 0 ? formatRupiah(it.hargaPlastik) : "-" });
     if (Number(it.sabun) > 0) items.push({ k: "row", l: "• Sabun (" + it.sabun + " Sachet)", r: Number(it.hargaSabun) > 0 ? formatRupiah(it.hargaSabun) : "-" });
     if (Number(it.pewangi) > 0) items.push({ k: "row", l: "• Pewangi (" + it.pewangi + " Sachet)", r: Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : "-" });
+    items.push(...jasaCanvasRows(it));
     items.push({ k: "div", style: "dash" });
     items.push({ k: "stamp", l: "Status", r: lunas ? "LUNAS" : "BELUM", c: lunas ? "#059669" : "#dc2626", ok: lunas });
     if (lunas) items.push({ k: "row", l: "Metode", r: it.metode || "-", b2: true });
@@ -3308,6 +3490,7 @@ function drawBulkReceiptsCanvas(receipts, logoImg) {
         if (Number(it.plastik) > 0) allItems.push({ k: "row", l: "• Plastik (" + it.plastik + " Pcs)", r: Number(it.hargaPlastik) > 0 ? formatRupiah(it.hargaPlastik) : "-" });
         if (Number(it.sabun) > 0) allItems.push({ k: "row", l: "• Sabun (" + it.sabun + " Sachet)", r: Number(it.hargaSabun) > 0 ? formatRupiah(it.hargaSabun) : "-" });
         if (Number(it.pewangi) > 0) allItems.push({ k: "row", l: "• Pewangi (" + it.pewangi + " Sachet)", r: Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : "-" });
+        allItems.push(...jasaCanvasRows(it));
         allItems.push({ k: "div", style: "dash" });
         allItems.push({ k: "stamp", l: "Status", r: lunas ? "LUNAS" : "BELUM", c: lunas ? "#059669" : "#dc2626", ok: lunas });
         if (lunas) allItems.push({ k: "row", l: "Metode", r: it.metode || "-", b2: true });
@@ -3619,6 +3802,7 @@ function buildReceiptWaText(it) {
     if (Number(it.plastik) > 0) L.push(...waRow("• Plastik (" + it.plastik + " Pcs)", Number(it.hargaPlastik) > 0 ? formatRupiah(it.hargaPlastik) : "-"));
     if (Number(it.sabun) > 0) L.push(...waRow("• Sabun (" + it.sabun + " Sachet)", Number(it.hargaSabun) > 0 ? formatRupiah(it.hargaSabun) : "-"));
     if (Number(it.pewangi) > 0) L.push(...waRow("• Pewangi (" + it.pewangi + " Sachet)", Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : "-"));
+    L.push(...jasaWaRows(it));
     L.push(dash);
     L.push(...waRow("Status", lunas ? "LUNAS" : "BELUM"));
     if (lunas) L.push(...waRow("Metode", it.metode || "-"));
@@ -3737,7 +3921,7 @@ Layanan   : ${fullJenis}${Number(it.kg) > 0 ? `
 • Berat     : ${it.kg} KG` : ''}${Number(it.plastik) > 0 ? `
 • Plastik   : ${it.plastik} Pcs | ${Number(it.hargaPlastik) > 0 ? formatRupiah(it.hargaPlastik) : '-'}` : ''}${Number(it.sabun) > 0 ? `
 • Sabun     : ${it.sabun} Sachet | ${Number(it.hargaSabun) > 0 ? formatRupiah(it.hargaSabun) : '-'}` : ''}${Number(it.pewangi) > 0 ? `
-• Pewangi   : ${it.pewangi} Sachet | ${Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : '-'}` : ''}
+• Pewangi   : ${it.pewangi} Sachet | ${Number(it.hargaPewangi) > 0 ? formatRupiah(it.hargaPewangi) : '-'}` : ''}${jasaTextLines(it)}
 --------------------------------
 Status    : ${it.bayar}
 Metode    : ${it.metode||'-'}
