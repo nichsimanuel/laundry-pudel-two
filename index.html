@@ -1022,6 +1022,20 @@ body.dark-theme #previousHistorySection .dashboard-card strong { color: #fff !im
 /* ===== Mode HP: tabel jadi kartu, dashboard 2 kolom ===== */
 button, label, select, input { touch-action: manipulation; }
 body.fs-lock { overflow: hidden; }
+
+/* Pengeluaran: riwayat sebelum hari ini hanya tampil saat diperbesar (kaca perbesar) */
+#expensePrevSection { display: none; }
+#expDateFilter { display: none; }
+#expenseCard:fullscreen #expensePrevSection,
+#expenseCard:-webkit-full-screen #expensePrevSection,
+#expenseCard.fs-fallback #expensePrevSection { display: block; }
+#expenseCard:fullscreen #expDateFilter,
+#expenseCard:-webkit-full-screen #expDateFilter,
+#expenseCard.fs-fallback #expDateFilter { display: block; }
+#expenseCard:fullscreen { overflow: auto; margin: 0; border-radius: 0; padding: 18px; background: #fff; }
+body.dark-theme #expenseCard:fullscreen { background: #17242E; color: #EAF2F6; }
+#expenseCard.fs-fallback { position: fixed; inset: 0; z-index: 9000; overflow: auto; margin: 0; border-radius: 0; padding: 14px; background: #fff; max-width: none; width: auto; -webkit-overflow-scrolling: touch; }
+body.dark-theme #expenseCard.fs-fallback { background: #17242E; color: #EAF2F6; }
 /* Layar penuh cadangan (iPhone/HP yang tidak mendukung Fullscreen API) */
 #historyCard.fs-fallback { position: fixed; inset: 0; z-index: 9000; overflow: auto; margin: 0; border-radius: 0; padding: 14px; background: #fff; max-width: none; width: auto; -webkit-overflow-scrolling: touch; }
 body.dark-theme #historyCard.fs-fallback { background: #17242E; color: #EAF2F6; }
@@ -1097,6 +1111,31 @@ body.dark-theme .calculator-grid button { background: #243746; color: #eaf2f6; b
 body.dark-theme .calculator-grid .calc-clear { background: #5a292d; color: #fecaca; }
 body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff; }
 
+/* =========================================================
+   TAMPILAN TERPISAH PER NAVIGASI + STOK + PENGELUARAN
+========================================================= */
+.nav-btn.active { background: #1E88E5; color: #fff; border-color: #1E88E5; box-shadow: 0 3px 8px rgba(30,136,229,.28); }
+body.dark-theme .nav-btn.active { background: #1E88E5; color: #fff; border-color: #1E88E5; }
+.income-info { display: none; }
+
+@media (min-width: 651px) {
+    .stock-dashboard { grid-template-columns: repeat(3, 1fr); }
+    .expense-dashboard { grid-template-columns: repeat(4, 1fr); }
+    .stock-form-grid { grid-template-columns: repeat(4, 1fr); }
+    .expense-form-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.history-table.compact-table { min-width: 720px; }
+.stock-pos { color: #2E9B63; font-weight: 800; white-space: nowrap; }
+.stock-neg { color: #F05A47; font-weight: 800; white-space: nowrap; }
+.sub-title { margin: 26px 0 12px; color: #28465A; font-size: 16px; font-weight: 800; }
+.exp-total { margin-top: 12px; text-align: right; font-size: 14px; font-weight: 800; color: #35566A; }
+.btn-cancel-wide { background: #64748B; color: #fff; width: 70%; justify-self: center; grid-column: 1 / -1; }
+@media (max-width: 600px) { .btn-cancel-wide { width: 100%; } }
+body.dark-theme .sub-title { color: #EAF2F6; }
+body.dark-theme .exp-total { color: #EAF2F6; }
+body.dark-theme .stock-pos { color: #4ADE80; }
+body.dark-theme .stock-neg { color: #FB7185; }
+
 </style>
 </head>
 <body>
@@ -1119,13 +1158,17 @@ body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff;
 
     <!-- NAVIGASI -->
     <nav class="main-nav" id="mainNav">
-        <button type="button" class="nav-btn" id="navBook">Pembukuan</button>
+        <button type="button" class="nav-btn active" id="navBook">Pembukuan</button>
+        <button type="button" class="nav-btn" id="navStock">Pengelolaan Stok</button>
+        <button type="button" class="nav-btn" id="navExpense">Pengeluaran</button>
         <button type="button" class="nav-btn nav-edit" id="navEdit">Edit Data</button>
         <button type="button" class="nav-btn nav-lock" id="navLock" style="display:none;">Kunci</button>
         <span class="nav-spacer"></span>
         <span class="admin-badge" id="adminBadge">Terkunci</span>
     </nav>
 
+    <!-- ===================== TAMPILAN: PEMBUKUAN ===================== -->
+    <section id="viewBook" class="app-view">
     <!-- FORM INPUT -->
     <div class="card form-card">
         <h2>Input Pembukuan</h2>
@@ -1197,6 +1240,7 @@ body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff;
                 <div class="dashboard-card purple">
                 <h3>Pendapatan Hari Ini</h3>
                 <strong id="totalPendapatan">Rp 0</strong>
+                <small id="totalPendapatanInfo" class="income-info"></small>
             </div>
         </div>
     </div>
@@ -1235,6 +1279,7 @@ body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff;
             <div class="dashboard-card purple">
                 <h3 id="tdPendLabel">Pendapatan Hari Ini</h3>
                 <strong id="tdPend">Rp 0</strong>
+                <small id="tdPendInfo" class="income-info"></small>
             </div>
         </div>
         <div class="table-wrapper">
@@ -1286,6 +1331,7 @@ body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff;
             <div class="dashboard-card purple">
                 <h3 id="pvPendLabel">Pendapatan (Semua Tanggal)</h3>
                 <strong id="pvPend">Rp 0</strong>
+                <small id="pvPendInfo" class="income-info"></small>
             </div>
         </div>
             <div class="table-wrapper">
@@ -1303,6 +1349,141 @@ body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff;
         </section>
         <div class="print-total" id="printTotal">Pendapatan Hari Ini: Rp 0</div>
     </div>
+</div>
+    </section>
+
+    <!-- ===================== TAMPILAN: PENGELOLAAN STOK ===================== -->
+    <section id="viewStock" class="app-view" style="display:none;">
+        <div class="card">
+            <h2>Pengelolaan Stok</h2>
+            <div class="dashboard stock-dashboard">
+                <div class="dashboard-card blue">
+                    <h3>Stok Sabun</h3>
+                    <strong id="stockTotal_sabun">0 Pcs</strong>
+                    <small id="stockUsed_sabun">Terpakai hari ini: 0 Pcs</small>
+                </div>
+                <div class="dashboard-card purple">
+                    <h3>Stok Pewangi</h3>
+                    <strong id="stockTotal_pewangi">0 Pcs</strong>
+                    <small id="stockUsed_pewangi">Terpakai hari ini: 0 Pcs</small>
+                </div>
+                <div class="dashboard-card teal">
+                    <h3>Stok Plastik</h3>
+                    <strong id="stockTotal_plastik">0 Pcs</strong>
+                    <small id="stockUsed_plastik">Terpakai hari ini: 0 Pcs</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card form-card">
+            <h2>Input Stok</h2>
+            <form id="stockForm">
+                <div class="form-grid stock-form-grid">
+                    <div class="form-group"><label>Sabun (Pcs)</label><input type="number" id="stokIn_sabun" min="0" step="1" inputmode="numeric" placeholder="Jumlah Sabun"></div>
+                    <div class="form-group"><label>Pewangi (Pcs)</label><input type="number" id="stokIn_pewangi" min="0" step="1" inputmode="numeric" placeholder="Jumlah Pewangi"></div>
+                    <div class="form-group"><label>Plastik (Pcs)</label><input type="number" id="stokIn_plastik" min="0" step="1" inputmode="numeric" placeholder="Jumlah Plastik"></div>
+                    <div class="form-group">
+                        <label>Cara Input</label>
+                        <select id="stokMode">
+                            <option value="TAMBAH">Tambah ke stok</option>
+                            <option value="KOREKSI">Atur ulang stok (koreksi, perlu kode akses)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="button-area">
+                    <button type="submit" class="btn-save">SIMPAN STOK</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Riwayat Input Stok</h2>
+            <div class="table-wrapper">
+                <table class="history-table compact-table">
+                    <thead><tr>
+                        <th>NO</th><th>TANGGAL</th><th>JAM</th><th>KETERANGAN</th><th>SABUN</th><th>PEWANGI</th><th>PLASTIK</th>
+                    </tr></thead>
+                    <tbody id="stockLogBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== TAMPILAN: PENGELUARAN ===================== -->
+    <section id="viewExpense" class="app-view" style="display:none;">
+        <div class="card">
+            <h2>Dashboard Pengeluaran</h2>
+            <div class="dashboard expense-dashboard">
+                <div class="dashboard-card blue">
+                    <h3>Pendapatan Kotor Hari Ini</h3>
+                    <strong id="expGross">Rp 0</strong>
+                </div>
+                <div class="dashboard-card orange">
+                    <h3>Pengeluaran Hari Ini</h3>
+                    <strong id="expToday">Rp 0</strong>
+                    <small id="expTodayCount">0 pembelian</small>
+                </div>
+                <div class="dashboard-card purple">
+                    <h3>Pendapatan Hari Ini (Setelah Pengeluaran)</h3>
+                    <strong id="expNet">Rp 0</strong>
+                </div>
+                <div class="dashboard-card dark">
+                    <h3>Pengeluaran (Semua Tanggal)</h3>
+                    <strong id="expAll">Rp 0</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="card form-card">
+            <h2 id="expenseFormTitle">Input Pengeluaran</h2>
+            <form id="expenseForm">
+                <div class="form-grid expense-form-grid">
+                    <div class="form-group"><label>Nama Barang yang Dibeli</label><input type="text" id="expNama" placeholder="Nama Barang" autocomplete="off" required></div>
+                    <div class="form-group"><label>Uang Pengeluaran</label><input type="text" id="expJumlah" inputmode="numeric" placeholder="Rp 0" autocomplete="off" required></div>
+                </div>
+                <div class="button-area">
+                    <button type="submit" class="btn-save" id="expenseSaveBtn">SIMPAN PENGELUARAN</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card" id="expenseCard">
+            <div class="history-header">
+                <div class="history-title-area">
+                    <h2>Pengeluaran Hari Ini</h2>
+                    <button type="button" class="history-fullscreen-btn" id="expFullscreenBtn" title="Perbesar / Riwayat Sebelum Hari Ini" aria-label="Perbesar">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+                    </button>
+                </div>
+                <div class="filter-area">
+                    <input type="date" id="expDateFilter" class="date-filter" title="Filter tanggal untuk riwayat sebelum hari ini">
+                    <input type="text" id="expSearch" class="search-box" placeholder="Cari nama barang...">
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="history-table compact-table">
+                    <thead><tr>
+                        <th>NO</th><th>TANGGAL</th><th>JAM</th><th>NAMA BARANG</th><th>PENGELUARAN</th>
+                    </tr></thead>
+                    <tbody id="expenseBody"></tbody>
+                </table>
+            </div>
+            <div class="exp-total" id="expTodayTotal">Total Pengeluaran Hari Ini: Rp 0</div>
+
+            <div id="expensePrevSection">
+            <h3 class="sub-title">Riwayat Pengeluaran Sebelum Hari Ini</h3>
+            <div class="table-wrapper">
+                <table class="history-table compact-table">
+                    <thead><tr>
+                        <th>NO</th><th>TANGGAL</th><th>JAM</th><th>NAMA BARANG</th><th>PENGELUARAN</th>
+                    </tr></thead>
+                    <tbody id="expensePrevBody"></tbody>
+                </table>
+            </div>
+            <div class="exp-total" id="expPrevTotal">Total Pengeluaran Riwayat: Rp 0</div>
+            </div>
+        </div>
+    </section>
 </div>
 
 <!-- =========================================================
@@ -1402,6 +1583,30 @@ body.dark-theme .calculator-grid .calc-equal { background: #2563eb; color: #fff;
                         <button type="button" class="btn-green" id="admEditSave" style="height:46px;">SIMPAN</button>
                     </div>
                 </div>
+            </div>
+
+            <div class="adm-section">
+                <h4>Edit / Hapus Data Pengeluaran</h4>
+                <p>Semua perubahan dan penghapusan data pengeluaran hanya bisa dilakukan di sini.</p>
+                <input type="text" id="admExpSearch" class="modal-input" placeholder="Cari nama barang / tanggal..." style="height:40px; font-size:14px;">
+                <div class="adm-list" id="admExpList"></div>
+                <div id="admExpEditBox" class="adm-editbox" style="display:none;">
+                    <h4>Form Edit Pengeluaran</h4>
+                    <div class="adm-form-grid" style="grid-template-columns:repeat(2,1fr);">
+                        <div><label>Nama Barang</label><input type="text" id="admExpNama" autocomplete="off"></div>
+                        <div><label>Uang Pengeluaran</label><input type="text" id="admExpJumlah" inputmode="numeric" autocomplete="off"></div>
+                    </div>
+                    <div class="modal-actions" style="margin-top:12px;">
+                        <button type="button" class="btn-gray" id="admExpCancel">BATAL</button>
+                        <button type="button" class="btn-green" id="admExpSave" style="height:46px;">SIMPAN</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="adm-section">
+                <h4>Hapus Riwayat Input Stok</h4>
+                <p>Menghapus catatan akan mengembalikan stok seperti sebelum input tersebut.</p>
+                <div class="adm-list" id="admStockList"></div>
             </div>
 
             <div class="adm-section">
@@ -1569,6 +1774,75 @@ function nextReceiptNo() {
 function receiptNo(it) { return "#" + (it.noStruk || "-"); }
 ensureReceiptNumbers();
 
+// =========================================================
+// DATA STOK & PENGELUARAN
+// =========================================================
+const STORAGE_STOCK = "pudel_stock_current";
+const STORAGE_STOCK_LOG = "pudel_stock_log";
+const STORAGE_EXPENSE = "pudel_expense_data";
+const STOCK_ITEMS = [
+    { key: "sabun", label: "Sabun" },
+    { key: "pewangi", label: "Pewangi" },
+    { key: "plastik", label: "Plastik" }
+];
+
+function readJSON(key, fallback) {
+    try {
+        const v = JSON.parse(localStorage.getItem(key));
+        return (v === null || v === undefined) ? fallback : v;
+    } catch (e) { return fallback; }
+}
+// Bilangan bulat >= 0 (selain itu dianggap 0)
+function toQty(v) {
+    const n = Math.floor(Number(v));
+    return isFinite(n) && n > 0 ? n : 0;
+}
+
+let stock = readJSON(STORAGE_STOCK, {});
+if (!stock || typeof stock !== "object" || Array.isArray(stock)) stock = {};
+STOCK_ITEMS.forEach(s => { stock[s.key] = toQty(stock[s.key]); });
+let stockLog = readJSON(STORAGE_STOCK_LOG, []);
+if (!Array.isArray(stockLog)) stockLog = [];
+let expenses = readJSON(STORAGE_EXPENSE, []);
+if (!Array.isArray(expenses)) expenses = [];
+let editingExpenseId = null;
+
+function saveStock() { try { localStorage.setItem(STORAGE_STOCK, JSON.stringify(stock)); } catch (e) {} }
+function saveStockLog() { try { localStorage.setItem(STORAGE_STOCK_LOG, JSON.stringify(stockLog)); } catch (e) {} }
+function saveExpenses() { try { localStorage.setItem(STORAGE_EXPENSE, JSON.stringify(expenses)); } catch (e) {} }
+
+// Stok yang benar-benar terpotong oleh sebuah transaksi disimpan di item.stokDipakai,
+// sehingga saat transaksi diedit / dihapus, stok dikembalikan dengan tepat.
+function revertStockUsage(it) {
+    if (!it) return;
+    const used = it.stokDipakai;
+    if (used) {
+        STOCK_ITEMS.forEach(s => { stock[s.key] = toQty(stock[s.key]) + toQty(used[s.key]); });
+        saveStock();
+    }
+    delete it.stokDipakai;
+}
+// Potong stok sesuai Plastik / Sabun / Pewangi pada transaksi. Mengembalikan daftar peringatan bila stok kurang.
+function applyStockUsage(it) {
+    const used = {};
+    const short = [];
+    STOCK_ITEMS.forEach(s => {
+        const need = toQty(it[s.key]);
+        const have = toQty(stock[s.key]);
+        const take = Math.min(need, have);
+        used[s.key] = take;
+        stock[s.key] = have - take;
+        if (need > have) short.push(`${s.label.toLowerCase()} kurang ${need - have} pcs`);
+    });
+    it.stokDipakai = used;
+    saveStock();
+    return short;
+}
+
+function expenseTotalWhere(fn) {
+    return expenses.reduce((sum, e) => fn(e) ? sum + (Number(e.jumlah) || 0) : sum, 0);
+}
+
 let dailyCoin = { date: "", count: 0 };
 try { dailyCoin = JSON.parse(localStorage.getItem(STORAGE_COIN_CURRENT) || "{}") || {}; } catch(e) { dailyCoin = {}; }
 
@@ -1577,7 +1851,7 @@ let editingId = null;
 
 function pad(n) { return String(n).padStart(2, '0'); }
 function formatTanggal(d) { return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`; }
-function formatRupiah(n) { return "Rp " + (Number(n)||0).toLocaleString("id-ID"); }
+function formatRupiah(n) { n = Number(n) || 0; return (n < 0 ? "-" : "") + "Rp " + Math.abs(n).toLocaleString("id-ID"); }
 function parseHarga(v) { return Number(String(v||"").replace(/[^\d]/g, "")) || 0; }
 
 function getDefaultCoins(jenis) {
@@ -1796,6 +2070,11 @@ function openAdminPanel() {
     hideEditBox();
     document.getElementById("admSearch").value = "";
     renderAdminList();
+    editingExpenseId = null;
+    hideExpenseEditBox();
+    document.getElementById("admExpSearch").value = "";
+    renderAdminExpenseList();
+    renderAdminStockList();
     document.getElementById("adminModal").style.display = "flex";
 }
 function closeAdminPanel() {
@@ -1805,6 +2084,7 @@ function closeAdminPanel() {
 function lockAdmin() {
     adminUntil = 0;
     editingId = null;
+    editingExpenseId = null;
     pendingAfterAuth = null;
     closeAdminPanel();
     document.getElementById("accessModal").style.display = "none";
@@ -1830,7 +2110,7 @@ document.getElementById("accessForm").addEventListener("submit", function(e) {
 document.getElementById("accessCloseBtn").addEventListener("click", closeAccessModal);
 document.getElementById("accessCancelBtn").addEventListener("click", closeAccessModal);
 
-document.getElementById("navBook").addEventListener("click", () => document.getElementById("historyCard").scrollIntoView({ behavior: "smooth", block: "start" }));
+// (Navigasi Pembukuan / Pengelolaan Stok / Pengeluaran ada di bagian NAVIGASI TAMPILAN di bawah)
 document.getElementById("navEdit").addEventListener("click", () => requireAdmin(openAdminPanel));
 document.getElementById("navLock").addEventListener("click", lockAdmin);
 
@@ -1992,6 +2272,14 @@ form.addEventListener("submit", function(e) {
     const hargaPewangi = parseHarga(document.getElementById("hargaPewangi").value);
     const kg = Number(document.getElementById("kg").value) || 0;
 
+    // Jumlah Plastik / Sabun / Pewangi tidak boleh melebihi total stok
+    const qtyInput = { plastik, sabun, pewangi };
+    const overStock = STOCK_ITEMS.filter(s => qtyInput[s.key] > toQty(stock[s.key]));
+    if (overStock.length) {
+        alert("Jumlah melebihi stok: " + overStock.map(s => `${s.label} (stok ${toQty(stock[s.key])} Pcs)`).join(", ") + ".");
+        return;
+    }
+
     let uangBayar = 0, kembalian = 0;
     if (bayar === "SUDAH") {
         uangBayar = parseHarga(uangBayarInput.value);
@@ -2026,6 +2314,9 @@ form.addEventListener("submit", function(e) {
         metode: bayar === "SUDAH" ? metode : ""
     };
 
+    // Stok sabun / pewangi / plastik ikut berkurang sesuai isian pembukuan
+    const stockShort = applyStockUsage(item);
+
     data.unshift(item);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
@@ -2047,6 +2338,7 @@ form.addEventListener("submit", function(e) {
     showStatus("ok", item.bayar === "SUDAH"
         ? "Pembukuan berhasil disimpan"
         : "Pembukuan berhasil disimpan — status belum bayar");
+    if (stockShort.length) showToast("Stok tidak cukup: " + stockShort.join(", ") + ". Stok dipotong sampai 0.", 6500);
 });
 
 // =========================================================
@@ -2118,17 +2410,33 @@ function renderTable() {
         }
     });
     const previousIncome = previousRows.reduce((sum, it) => sum + (it.bayar === "SUDAH" ? (Number(it.harga) || 0) : 0), 0);
+
+    // Pengeluaran otomatis mengurangi pendapatan (tidak dihitung saat pencarian nama aktif,
+    // sama seperti koin: pencarian hanya menampilkan transaksi yang cocok).
+    const expTodayAmt = s ? 0 : expenseTotalWhere(e => e.tanggal === today);
+    const expPrevAmt = s ? 0 : expenseTotalWhere(e => e.tanggal !== today && (!d || dateToIso(e.tanggal) === d));
+    const netToday = totalRp - expTodayAmt;
+    const netPrevious = previousIncome - expPrevAmt;
+    function setIncomeInfo(id, gross, exp) {
+        const n = document.getElementById(id);
+        if (!n) return;
+        n.textContent = exp > 0 ? `Kotor ${formatRupiah(gross)} - Pengeluaran ${formatRupiah(exp)}` : "";
+        n.style.display = exp > 0 ? "block" : "none";
+    }
     document.getElementById("totalTransaksi").textContent = todayRows.length;
     document.getElementById("totalMetode").textContent = `${cCash} / ${cQris}`;
     document.getElementById("totalCashQris").textContent = `${formatRupiah(totalCash)} / ${formatRupiah(totalQris)}`;
 
     // Simpan otomatis pendapatan hari ini, tanpa menghapus data tanggal-tanggal sebelumnya.
     try {
-        localStorage.setItem("pudel_two_laundry_daily_income", JSON.stringify({ tanggal: today, pendapatan: totalRp }));
+        localStorage.setItem("pudel_two_laundry_daily_income", JSON.stringify({ tanggal: today, pendapatan: netToday, kotor: totalRp, pengeluaran: expTodayAmt }));
     } catch (e) {}
-    document.getElementById("totalPendapatan").textContent = formatRupiah(totalRp);
-    document.getElementById("printTotal").textContent = "Pendapatan Hari Ini: " + formatRupiah(totalRp);
-    document.getElementById("previousPrintTotal").textContent = "Total Pendapatan Riwayat: " + formatRupiah(previousIncome);
+    document.getElementById("totalPendapatan").textContent = formatRupiah(netToday);
+    document.getElementById("printTotal").textContent = "Pendapatan Hari Ini: " + formatRupiah(netToday);
+    document.getElementById("previousPrintTotal").textContent = "Total Pendapatan Riwayat: " + formatRupiah(netPrevious);
+    setIncomeInfo("totalPendapatanInfo", totalRp, expTodayAmt);
+    setIncomeInfo("tdPendInfo", totalRp, expTodayAmt);
+    setIncomeInfo("pvPendInfo", previousIncome, expPrevAmt);
 
     // Dashboard di Pembukuan (hari ini) & Riwayat (tanggal dipilih), ikut filter nama/tanggal
     function summarize(rows) {
@@ -2157,9 +2465,15 @@ function renderTable() {
     const tdSum = summarize(todayRows);
     // Tanpa pencarian, koin hari ini mengikuti penghitung koin harian (sama dengan dashboard utama)
     if (!s) tdSum.coin = dailyCoin.count;
+    tdSum.total -= expTodayAmt;
     fillDash("td", tdSum, "Koin Hari Ini", "Pendapatan Hari Ini");
     const dLabel = d ? isoToDmy(d) : "Semua Tanggal";
-    fillDash("pv", summarize(previousRows), `Koin (${dLabel})`, `Pendapatan (${dLabel})`);
+    const pvSum = summarize(previousRows);
+    pvSum.total -= expPrevAmt;
+    fillDash("pv", pvSum, `Koin (${dLabel})`, `Pendapatan (${dLabel})`);
+
+    // Tampilan Stok & Pengeluaran ikut diperbarui
+    try { refreshStockUI(); refreshExpenseUI(); } catch (err) { console.error(err); }
 }
 
 // =========================================================
@@ -2290,6 +2604,7 @@ window.startEdit = function(id) {
         document.getElementById("edUang").value = sudah && pay.uang ? formatRupiah(pay.uang) : "";
         updateEditKoin();
         toggleEditPay();
+        applyEditStockLimits(it);
 
         const box = document.getElementById("admEditBox");
         box.style.display = "block";
@@ -2317,6 +2632,20 @@ window.saveEdit = function() {
     if (waktu.length === 5) waktu += ":00";
     if (bayar === "SUDAH" && !metode) return alert("Pilih metode pembayaran (Cash / QRIS).");
 
+    // Transaksi lama / hasil import (belum tercatat memotong stok) tidak dibatasi & tidak mengubah stok
+    const stockTracked = !!it.stokDipakai;
+    if (stockTracked) {
+        const newQty = {
+            plastik: Number(document.getElementById("edPlastik").value) || 0,
+            sabun: Number(document.getElementById("edSabun").value) || 0,
+            pewangi: Number(document.getElementById("edPewangi").value) || 0
+        };
+        const over = STOCK_ITEMS.filter(s => newQty[s.key] > toQty(stock[s.key]) + toQty(it.stokDipakai[s.key]));
+        if (over.length) {
+            return alert("Jumlah melebihi stok: " + over.map(s => `${s.label} (maks ${toQty(stock[s.key]) + toQty(it.stokDipakai[s.key])} Pcs)`).join(", ") + ".");
+        }
+    }
+
     const harga = bayar === "SUDAH" ? parseHarga(document.getElementById("edHarga").value) : 0;
     let uang = 0, kembali = 0;
     if (bayar === "SUDAH") {
@@ -2325,6 +2654,9 @@ window.saveEdit = function() {
         if (uang < harga) return alert("Uang bayar kurang dari harga. Periksa kembali uang bayar.");
         kembali = uang - harga;
     }
+
+    // Kembalikan stok lama; stok baru dipotong setelah data diperbarui
+    if (stockTracked) revertStockUsage(it);
 
     // Sesuaikan koin hari ini: cabut koin lama, tambah koin baru
     const oldKoin = it.koin || getDefaultCoins(it.jenis);
@@ -2351,12 +2683,15 @@ window.saveEdit = function() {
     it.uangBayar = uang;
     it.kembalian = kembali;
 
+    const editShort = stockTracked ? applyStockUsage(it) : [];
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     editingId = null;
     hideEditBox();
     renderAdminList();
     renderTable();
     showStatus("ok", "Perubahan data berhasil disimpan");
+    if (editShort.length) showToast("Stok tidak cukup: " + editShort.join(", ") + ". Stok dipotong sampai 0.", 6500);
 };
 
 window.del = function(id) {
@@ -2365,6 +2700,7 @@ window.del = function(id) {
         if (!it) return;
         if (!confirm("Hapus data ini?")) return;
         applyCoinDelta(it.tanggal, -(it.koin || getDefaultCoins(it.jenis)));
+        revertStockUsage(it);
         data = data.filter(x => x.id !== id);
         if (editingId === id) { editingId = null; hideEditBox(); }
         // Semua data terhapus: nomor struk berikutnya kembali ke 1. Jika data masih ada, lanjut dari nomor terbesar yang tersisa.
@@ -3487,7 +3823,11 @@ document.getElementById("excelBtn").addEventListener("click", function() {
         <td>${Number(it.koin) || getDefaultCoins(it.jenis)}</td>
         </tr>`;
     });
-    html += `</tbody></table><div class="total-box">Total Pendapatan: ${formatRupiah(totalPendapatan)}</div></body></html>`;
+    const totalPengeluaran = expenseTotalWhere(() => true);
+    const totalBoxText = totalPengeluaran > 0
+        ? `Total Pendapatan Kotor: ${formatRupiah(totalPendapatan)}<br>Total Pengeluaran: ${formatRupiah(totalPengeluaran)}<br>Total Pendapatan Bersih: ${formatRupiah(totalPendapatan - totalPengeluaran)}`
+        : `Total Pendapatan: ${formatRupiah(totalPendapatan)}`;
+    html += `</tbody></table><div class="total-box">${totalBoxText}</div></body></html>`;
 
     const blob = new Blob([html], { type: "application/vnd.ms-excel;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -3690,9 +4030,399 @@ function calculatorEquals() {
 function calculatorClear() { calculatorValue = "0"; calculatorTotal = 0; calculatorHasResult = false; calculatorRefresh(); }
 function calculatorBackspace() { if (calculatorHasResult) return calculatorClear(); calculatorValue = calculatorValue.length > 1 ? calculatorValue.slice(0, -1) : "0"; calculatorRefresh(calculatorTotal ? "Subtotal: " + formatRupiah(calculatorTotal) : ""); }
 function calculatorCopyResult() { const n = Number(calculatorValue) || 0; const textValue = formatRupiah(n); if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(textValue).then(() => showToast("Hasil kalkulator disalin")); else alert(textValue); }
-document.getElementById("navCalculator").addEventListener("click", () => { calculatorClear(); document.getElementById("calculatorModal").style.display = "flex"; });
-document.getElementById("calculatorCloseBtn").addEventListener("click", () => { document.getElementById("calculatorModal").style.display = "none"; });
-document.getElementById("calculatorModal").addEventListener("click", e => { if (e.target.id === "calculatorModal") e.currentTarget.style.display = "none"; });
+// Pengaman: bila elemen kalkulator tidak ada di HTML, script tetap lanjut (tidak error)
+const navCalcBtn = document.getElementById("navCalculator");
+const calcModalEl = document.getElementById("calculatorModal");
+const calcCloseEl = document.getElementById("calculatorCloseBtn");
+if (navCalcBtn && calcModalEl) navCalcBtn.addEventListener("click", () => { calculatorClear(); calcModalEl.style.display = "flex"; });
+if (calcCloseEl && calcModalEl) calcCloseEl.addEventListener("click", () => { calcModalEl.style.display = "none"; });
+if (calcModalEl) calcModalEl.addEventListener("click", e => { if (e.target.id === "calculatorModal") e.currentTarget.style.display = "none"; });
+
+// =========================================================
+// NAVIGASI TAMPILAN (PEMBUKUAN / PENGELOLAAN STOK / PENGELUARAN)
+// =========================================================
+const APP_VIEWS = { book: "viewBook", stock: "viewStock", expense: "viewExpense" };
+const VIEW_NAV = { book: "navBook", stock: "navStock", expense: "navExpense" };
+let currentView = "book";
+
+function getEl(id) { return document.getElementById(id); }
+
+function showView(name) {
+    if (!APP_VIEWS[name]) name = "book";
+    currentView = name;
+    Object.keys(APP_VIEWS).forEach(k => {
+        getEl(APP_VIEWS[k]).style.display = (k === name) ? "" : "none";
+        getEl(VIEW_NAV[k]).classList.toggle("active", k === name);
+    });
+    if (name === "stock") refreshStockUI();
+    if (name === "expense") refreshExpenseUI();
+    if (name === "book") renderTable();
+}
+
+getEl("navBook").addEventListener("click", () => {
+    if (currentView !== "book") {
+        showView("book");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+    }
+    // Sudah di Pembukuan: perilaku lama (loncat ke tabel pembukuan)
+    getEl("historyCard").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+getEl("navStock").addEventListener("click", () => { showView("stock"); window.scrollTo({ top: 0, behavior: "smooth" }); });
+getEl("navExpense").addEventListener("click", () => { showView("expense"); window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+// =========================================================
+// PENGELOLAAN STOK
+// =========================================================
+function usedTodayQty(key) {
+    const t = formatTanggal(new Date());
+    return data.reduce((sum, it) => it.tanggal === t ? sum + toQty(it[key]) : sum, 0);
+}
+function fmtDelta(n) {
+    n = Number(n) || 0;
+    if (n > 0) return `<span class="stock-pos">+${n} Pcs</span>`;
+    if (n < 0) return `<span class="stock-neg">-${Math.abs(n)} Pcs</span>`;
+    return "-";
+}
+
+// Batas isian Plastik / Sabun / Pewangi di form pembukuan = total stok
+function updateStockLimits() {
+    STOCK_ITEMS.forEach(s => {
+        const el = getEl(s.key);
+        if (!el) return;
+        if (!el.dataset.basePh) el.dataset.basePh = el.placeholder;
+        const have = toQty(stock[s.key]);
+        el.max = have;
+        el.placeholder = el.dataset.basePh + " (maks " + have + ")";
+        if (Number(el.value) > have) el.value = have;
+    });
+}
+// Batas isian di panel Edit Data = stok sekarang + yang sudah terpotong oleh transaksi itu
+function applyEditStockLimits(it) {
+    STOCK_ITEMS.forEach(s => {
+        const el = getEl("ed" + s.key.charAt(0).toUpperCase() + s.key.slice(1));
+        if (!el) return;
+        if (it && it.stokDipakai) el.max = toQty(stock[s.key]) + toQty(it.stokDipakai[s.key]);
+        else el.removeAttribute("max");
+    });
+}
+function clampQtyInput(el, label) {
+    if (el.max === "" || el.value === "") return;
+    const max = Number(el.max), v = Number(el.value);
+    if (v > max) {
+        el.value = max;
+        showToast(`Jumlah ${label.toLowerCase()} melebihi stok. Maksimal ${max} Pcs.`, 3500);
+    } else if (v < 0) {
+        el.value = 0;
+    }
+}
+STOCK_ITEMS.forEach(s => {
+    const cap = s.key.charAt(0).toUpperCase() + s.key.slice(1);
+    ["", "ed"].forEach(pre => {
+        const el = getEl(pre ? pre + cap : s.key);
+        if (el) el.addEventListener("input", () => clampQtyInput(el, s.label));
+    });
+});
+
+function refreshStockUI() {
+    renderAdminStockList();
+    updateStockLimits();
+    STOCK_ITEMS.forEach(s => {
+        const have = toQty(stock[s.key]);
+        getEl("stockTotal_" + s.key).textContent = have + " Pcs";
+        getEl("stockUsed_" + s.key).textContent =
+            (have === 0 ? "Stok habis - " : "") + "Terpakai hari ini: " + usedTodayQty(s.key) + " Pcs";
+    });
+    const body = getEl("stockLogBody");
+    if (!stockLog.length) {
+        body.innerHTML = '<tr><td colspan="7" class="empty">Belum ada input stok.</td></tr>';
+        return;
+    }
+    body.innerHTML = stockLog.map((it, i) => `
+        <tr>
+            <td data-label="No">${i + 1}</td>
+            <td data-label="Tanggal">${escapeHTML(it.tanggal)}</td>
+            <td data-label="Jam">${escapeHTML(it.waktu)}</td>
+            <td data-label="Keterangan" style="font-weight:bold;">${it.mode === "KOREKSI" ? "Koreksi stok" : "Tambah stok"}</td>
+            <td data-label="Sabun">${fmtDelta(it.sabun)}</td>
+            <td data-label="Pewangi">${fmtDelta(it.pewangi)}</td>
+            <td data-label="Plastik">${fmtDelta(it.plastik)}</td>
+        </tr>`).join("");
+}
+
+getEl("stockForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const mode = getEl("stokMode").value;
+    const raw = {};
+    for (const s of STOCK_ITEMS) {
+        const v = getEl("stokIn_" + s.key).value.trim();
+        if (v !== "" && !/^\d+$/.test(v)) {
+            alert(`Jumlah ${s.label.toLowerCase()} harus berupa angka bulat 0 atau lebih.`);
+            return;
+        }
+        raw[s.key] = v;
+    }
+
+    const doSave = () => {
+        const delta = {};
+        let changed = false;
+        STOCK_ITEMS.forEach(s => {
+            const v = raw[s.key];
+            if (v === "") { delta[s.key] = 0; return; }
+            const n = parseInt(v, 10);
+            delta[s.key] = mode === "TAMBAH" ? n : n - toQty(stock[s.key]);
+            if (delta[s.key] !== 0) changed = true;
+        });
+        if (!changed) {
+            alert(mode === "TAMBAH"
+                ? "Isi minimal satu jumlah stok yang akan ditambahkan."
+                : "Tidak ada perubahan stok. Isi jumlah stok yang baru.");
+            return;
+        }
+        STOCK_ITEMS.forEach(s => { stock[s.key] = toQty(stock[s.key] + delta[s.key]); });
+        const now = new Date();
+        stockLog.unshift({
+            id: Date.now(),
+            tanggal: formatTanggal(now),
+            waktu: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`,
+            mode,
+            sabun: delta.sabun,
+            pewangi: delta.pewangi,
+            plastik: delta.plastik
+        });
+        saveStock();
+        saveStockLog();
+        getEl("stockForm").reset();
+        refreshStockUI();
+        showStatus("ok", mode === "TAMBAH" ? "Stok berhasil ditambahkan" : "Stok berhasil dikoreksi");
+    };
+
+    if (mode === "KOREKSI") requireAdmin(doSave);
+    else doSave();
+});
+
+window.deleteStockLog = function(id) {
+    requireAdmin(() => {
+        const it = stockLog.find(x => x.id === id);
+        if (!it) return;
+        if (!confirm("Hapus catatan input stok ini? Stok akan dikembalikan seperti sebelum input ini.")) return;
+        STOCK_ITEMS.forEach(s => { stock[s.key] = toQty(stock[s.key] - (Number(it[s.key]) || 0)); });
+        stockLog = stockLog.filter(x => x.id !== id);
+        saveStock();
+        saveStockLog();
+        refreshStockUI();
+        showStatus("del", "Catatan stok berhasil dihapus");
+    });
+};
+
+// =========================================================
+// PENGELUARAN
+// =========================================================
+getEl("expJumlah").addEventListener("input", function() {
+    const a = parseHarga(this.value);
+    this.value = a > 0 ? formatRupiah(a) : "";
+});
+
+function expenseRowHTML(it, idx) {
+    return `
+        <tr>
+            <td data-label="No">${idx + 1}</td>
+            <td data-label="Tanggal">${escapeHTML(it.tanggal)}</td>
+            <td data-label="Jam">${escapeHTML(it.waktu)}</td>
+            <td data-label="Nama Barang" style="font-weight:bold;">${escapeHTML(it.nama)}</td>
+            <td data-label="Pengeluaran"><span class="price">${formatRupiah(it.jumlah)}</span></td>
+        </tr>`;
+}
+
+function refreshExpenseUI() {
+    renderAdminExpenseList();
+    const today = formatTanggal(new Date());
+    const q = (getEl("expSearch").value || "").toLowerCase().trim();
+    const d = getEl("expDateFilter").value;
+    const matches = e => !q || String(e.nama || "").toLowerCase().includes(q);
+
+    const todayList = expenses.filter(e => e.tanggal === today && matches(e));
+    let prevList = expenses.filter(e => e.tanggal !== today && matches(e));
+    if (d) prevList = prevList.filter(e => dmyToIso(e.tanggal) === d);
+
+    getEl("expenseBody").innerHTML = todayList.length
+        ? todayList.map(expenseRowHTML).join("")
+        : '<tr><td colspan="5" class="empty">Belum ada pengeluaran untuk hari ini.</td></tr>';
+    getEl("expensePrevBody").innerHTML = prevList.length
+        ? prevList.map(expenseRowHTML).join("")
+        : '<tr><td colspan="5" class="empty">Belum ada riwayat pengeluaran untuk tanggal sebelum hari ini.</td></tr>';
+
+    const sum = list => list.reduce((t, e) => t + (Number(e.jumlah) || 0), 0);
+    getEl("expTodayTotal").textContent = "Total Pengeluaran Hari Ini: " + formatRupiah(sum(todayList));
+    getEl("expPrevTotal").textContent = "Total Pengeluaran Riwayat: " + formatRupiah(sum(prevList));
+
+    // Dashboard (angka penuh, tidak terpengaruh pencarian)
+    const expTodayAll = expenses.filter(e => e.tanggal === today);
+    const expTodaySum = sum(expTodayAll);
+    const grossToday = data.reduce((t, it) => (it.tanggal === today && it.bayar === "SUDAH") ? t + (Number(it.harga) || 0) : t, 0);
+    getEl("expGross").textContent = formatRupiah(grossToday);
+    getEl("expToday").textContent = formatRupiah(expTodaySum);
+    getEl("expTodayCount").textContent = expTodayAll.length + " pembelian";
+    getEl("expNet").textContent = formatRupiah(grossToday - expTodaySum);
+    getEl("expAll").textContent = formatRupiah(sum(expenses));
+}
+
+function resetExpenseForm() {
+    getEl("expenseForm").reset();
+}
+
+getEl("expenseForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const nama = getEl("expNama").value.trim();
+    const jumlah = parseHarga(getEl("expJumlah").value);
+    if (!nama) return alert("Nama barang tidak boleh kosong.");
+    if (jumlah <= 0) return alert("Uang pengeluaran harus lebih dari Rp 0.");
+
+    const now = new Date();
+    expenses.unshift({
+        id: Date.now(),
+        tanggal: formatTanggal(now),
+        waktu: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`,
+        nama,
+        jumlah
+    });
+    saveExpenses();
+    resetExpenseForm();
+    renderTable();   // pendapatan hari ini otomatis berkurang
+    showStatus("ok", "Pengeluaran berhasil disimpan");
+});
+
+getEl("expSearch").addEventListener("input", refreshExpenseUI);
+// Kaca perbesar pengeluaran: menampilkan riwayat sebelum hari ini
+(function() {
+    const btn = getEl("expFullscreenBtn");
+    const el = getEl("expenseCard");
+    const setFallback = on => {
+        el.classList.toggle("fs-fallback", on);
+        document.body.classList.toggle("fs-lock", on);
+        if (on) el.scrollTop = 0;
+    };
+    btn.addEventListener("click", () => {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else if (el.classList.contains("fs-fallback")) {
+            setFallback(false);
+        } else if (window.matchMedia("(max-width: 650px)").matches || !el.requestFullscreen) {
+            setFallback(true);
+        } else {
+            el.requestFullscreen().catch(() => setFallback(true));
+        }
+    });
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape" && el.classList.contains("fs-fallback")) setFallback(false);
+    });
+})();
+
+getEl("expDateFilter").addEventListener("change", refreshExpenseUI);
+
+// ---- Edit / Hapus Pengeluaran (hanya di Panel Edit Data) ----
+function hideExpenseEditBox() {
+    const b = getEl("admExpEditBox");
+    if (b) b.style.display = "none";
+}
+
+function renderAdminExpenseList() {
+    const box = getEl("admExpList");
+    if (!box) return;
+    const q = (getEl("admExpSearch").value || "").toLowerCase().trim();
+    const list = expenses.filter(it =>
+        !q ||
+        String(it.nama || "").toLowerCase().includes(q) ||
+        String(it.tanggal || "").includes(q)
+    );
+    if (!list.length) {
+        box.innerHTML = '<div class="empty" style="padding:18px;">Tidak ada data pengeluaran.</div>';
+        return;
+    }
+    box.innerHTML = list.map(it => `
+        <div class="adm-item ${editingExpenseId === it.id ? 'active' : ''}">
+            <div class="info">
+                <b>${escapeHTML(it.nama)}</b> - ${formatRupiah(it.jumlah)}<br>
+                <span>${escapeHTML(it.tanggal)} ${escapeHTML(it.waktu)}</span>
+            </div>
+            <button type="button" class="action-btn btn-edit" onclick="editExpense(${it.id})">Edit</button>
+            <button type="button" class="action-btn btn-delete" onclick="deleteExpense(${it.id})">Hapus</button>
+        </div>
+    `).join("");
+}
+
+function renderAdminStockList() {
+    const box = getEl("admStockList");
+    if (!box) return;
+    if (!stockLog.length) {
+        box.innerHTML = '<div class="empty" style="padding:18px;">Belum ada input stok.</div>';
+        return;
+    }
+    box.innerHTML = stockLog.map(it => `
+        <div class="adm-item">
+            <div class="info">
+                <b>${it.mode === "KOREKSI" ? "Koreksi stok" : "Tambah stok"}</b><br>
+                <span>${escapeHTML(it.tanggal)} ${escapeHTML(it.waktu)} | Sabun ${fmtDelta(it.sabun)} | Pewangi ${fmtDelta(it.pewangi)} | Plastik ${fmtDelta(it.plastik)}</span>
+            </div>
+            <button type="button" class="action-btn btn-delete" onclick="deleteStockLog(${it.id})">Hapus</button>
+        </div>
+    `).join("");
+}
+
+getEl("admExpSearch").addEventListener("input", renderAdminExpenseList);
+getEl("admExpJumlah").addEventListener("input", function() {
+    const a = parseHarga(this.value);
+    this.value = a > 0 ? formatRupiah(a) : "";
+});
+getEl("admExpCancel").addEventListener("click", () => {
+    editingExpenseId = null;
+    hideExpenseEditBox();
+    renderAdminExpenseList();
+});
+getEl("admExpSave").addEventListener("click", () => {
+    requireAdmin(() => {
+        const it = expenses.find(x => x.id === editingExpenseId);
+        if (!it) { hideExpenseEditBox(); return; }
+        const nama = getEl("admExpNama").value.trim();
+        const jumlah = parseHarga(getEl("admExpJumlah").value);
+        if (!nama) return alert("Nama barang tidak boleh kosong.");
+        if (jumlah <= 0) return alert("Uang pengeluaran harus lebih dari Rp 0.");
+        it.nama = nama;
+        it.jumlah = jumlah;
+        saveExpenses();
+        editingExpenseId = null;
+        hideExpenseEditBox();
+        renderTable();
+        showStatus("ok", "Perubahan pengeluaran berhasil disimpan");
+    });
+});
+
+window.editExpense = function(id) {
+    requireAdmin(() => {
+        const it = expenses.find(x => x.id === id);
+        if (!it) return;
+        editingExpenseId = id;
+        getEl("admExpNama").value = it.nama || "";
+        getEl("admExpJumlah").value = formatRupiah(it.jumlah);
+        const box = getEl("admExpEditBox");
+        box.style.display = "block";
+        renderAdminExpenseList();
+        box.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+};
+
+window.deleteExpense = function(id) {
+    requireAdmin(() => {
+        const it = expenses.find(x => x.id === id);
+        if (!it) return;
+        if (!confirm(`Hapus pengeluaran "${it.nama}" (${formatRupiah(it.jumlah)})?`)) return;
+        expenses = expenses.filter(x => x.id !== id);
+        if (editingExpenseId === id) { editingExpenseId = null; hideExpenseEditBox(); }
+        saveExpenses();
+        renderTable();
+        showStatus("del", "Pengeluaran berhasil dihapus");
+    });
+};
 
 applyAdminUI();
 renderTable();
